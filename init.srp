@@ -1,0 +1,269 @@
+# Project 3
+# Amy Huo
+#
+# Implements a program that will play a composition involving 4 voices,
+# all following randomized arpeggio patterns in slightly different ways.
+#
+# See README for instructions on usage.
+# Port number: 8347
+
+require "debug"
+require "wxserpent"
+require "sched"
+require "midi-io"
+require "prefs"
+require "mididevice"
+require "slider"
+
+#############
+# Constants #
+#############
+
+//Different arpeggio types
+arp_MAJ = [0, 4, 7]
+arp_MIN = [0, 3, 7]
+arp_7 = [0, 4, 7, 11]
+arp_DOM = [0, 4, 7, 10]
+
+//Instrument setups
+INST = [[46, 46, 49, 96], [73, 73, 32, 56], [106, 106, 44, 23],
+       [24, 24, 53, 41], [104, 104, 109, 92], [10, 10, 43, 8],
+       [112, 112, 115, 113]]
+
+########################
+# Global-ish variables #
+########################
+
+current_id = 0 //used to stop the sounds
+arp = arp_MAJ //current arpeggio
+bpm = 200
+key = 0 //C = 0, C# = 1, etc.
+inst = INST[0]
+
+//voices: (0: fast arp), (1: harmony of 0), (2: base, slow arp), (3: "melody")
+deg = [0, 4, 0, 0] //degree in octave
+oct = [5, 5, 3, 6] //octave
+vol = [50, 50, 70, 90]
+
+#############################
+# GUI/OSC/O2 implementation #
+#############################
+
+//Initialize O2
+o2_initialize("incrediblepotatoes", false)
+o2_clock_set()
+sched_o2_enabled = true
+
+//Create an OSC port, redirect OSC messages to O2 service
+//Port number: 8347
+o2_osc_port_new("melody", 8347, false)
+
+//Create O2 service, add handlers
+o2_service_new("melody")
+
+//Transposition buttons
+o2_method_new("/melody/4/2nav2", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav3", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav4", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav5", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav6", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav7", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav8", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav9", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav10", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav11", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav12", "i", 'key_handler', true)
+o2_method_new("/melody/4/2nav13", "i", 'key_handler', true)
+
+//Does string manipulation to determine new key
+def key_handler(time, address, types, int_param):
+    display "key change"
+    key_cut = subseq(address, 0, len(address) - 1)
+    if (isdigit(key_cut.last()))
+        key = int(address.last()) + 8
+    key = int(address.last()) - 2
+
+//Volume controls (min = 0, max = 100)
+o2_method_new("/melody/2/fader1", "f", 'vol_handler', true)
+o2_method_new("/melody/2/fader2", "f", 'vol_handler', true)
+o2_method_new("/melody/2/fader3", "f", 'vol_handler', true)
+o2_method_new("/melody/2/fader4", "f", 'vol_handler', true)
+
+def vol_handler(time, address, types, float_param):
+    display "volume change"
+    inst = int(address.last()) - 1
+    vol[inst] = int(float_param * 100)
+
+//BPM controls (min = 1, max = 401)
+o2_method_new("/melody/2/fader5", "f", 'bpm_handler', true)
+
+def bpm_handler(time, address, types, float_param):
+    display "bpm change"
+    bpm = int(float_param * 400) + 1
+
+//Arpeggio type controls
+o2_method_new("/melody/4/nav1", "i", 'maj_handler', true)
+o2_method_new("/melody/4/nav2", "i", 'min_handler', true)
+o2_method_new("/melody/4/nav3", "i", 'seven_handler', true)
+o2_method_new("/melody/4/nav4", "i", 'dom_handler', true)
+
+def maj_handler(time, address, types, int_param):
+    display "chord change"
+    arp = arp_MAJ
+
+def min_handler(time, address, types, int_param):
+    display "chord change"
+    arp = arp_MIN
+
+def seven_handler(time, address, types, int_param):
+    display "chord change"
+    arp = arp_7
+
+def dom_handler(time, address, types, int_param):
+    display "chord change"
+    arp = arp_DOM
+
+//Instruments controls
+o2_method_new("/melody/1/push1", "i", 'ins_handler', true)
+o2_method_new("/melody/1/push2", "i", 'ins_handler', true)
+o2_method_new("/melody/1/push3", "i", 'ins_handler', true)
+o2_method_new("/melody/1/push4", "i", 'ins_handler', true)
+o2_method_new("/melody/1/push5", "i", 'ins_handler', true)
+o2_method_new("/melody/1/push6", "i", 'ins_handler', true)
+o2_method_new("/melody/1/push7", "i", 'ins_handler', true)
+
+def ins_handler(time, address, types, i_param):
+    display "instrument change"
+    inst = INST[int(address.last()) - 1]
+    sched_cause(0, midi_out, 'program', 0, inst[0])
+    sched_cause(0, midi_out, 'program', 1, inst[1])
+    sched_cause(0, midi_out, 'program', 2, inst[2])
+    sched_cause(0, midi_out, 'program', 3, inst[3])
+
+//Computer GUI: start and stop buttons
+button = Button(0, "Stop", 5, 5, 75, 30)
+button.method = 'stop_pressed'
+
+def stop_pressed(obj, event, x, y):
+    current_id = current_id + 1
+
+button = Button(0, "Start", 5, 45, 75, 30)
+button.method = 'start_pressed'
+
+def start_pressed(obj, event, x, y):
+    activity_start(100)
+
+###############################
+# Scheduling helper functions #
+###############################
+
+//Moves up a note in the arpeggio
+def move_up(voice):
+    curr_deg = arp.index(deg[voice])
+    if (curr_deg < len(arp) - 1):
+        deg[voice] = arp[curr_deg + 1]
+    else
+        deg[voice] = 0
+        oct[voice] = oct[voice] + 1
+
+//Moves the harmony with the melody
+def move_harmony(base, har):
+    curr_deg = arp.index(deg[base])
+    if (curr_deg < len(arp) - 1):
+        deg[har] = arp[curr_deg + 1]
+    else
+        deg[har] = 0
+        oct[har] = oct[base] + 1
+
+//Moves down a note in the arpeggio
+def move_down(voice):
+    curr_deg = arp.index(deg[voice])
+    if (curr_deg > 0)
+        deg[voice] = arp[curr_deg - 1]
+    else
+        deg[voice] = arp[len(arp) - 1]
+        oct[voice] = oct[voice] - 1
+
+//Generates the next note (higher voices)
+def new_note(voice):
+    //ensures that note stays in range 3 < oct < 8, then randomly chooses note
+    if (oct[voice] > 8 or (oct[voice] > 3 and random() < 0.5))
+        move_down(voice)
+    else
+        move_up(voice)
+
+//Generates the next note (lower voices)
+def new_note_low(voice):
+    //ensures that note stays in range 1 < oct < 4, then randomly chooses note
+    if (oct[voice] > 5 or (oct[voice] > 3 and random() < 0.5))
+        move_down(voice)
+    else
+        move_up(voice)
+
+//Generates the next measure
+def play_measure(id, i):
+    if id != current_id:
+        display "stopped", id, time_get()
+        return
+
+    sched_cause(0, nil, 'play_beat', id, 0)
+
+    new_note_low(2)
+
+    pitch_2 = (12 * oct[2]) + deg[2] + key
+
+    sched_cause(0, midi_out, 'note_on', 2, pitch_2, vol[2])
+    sched_cause(0.99 * 240 / bpm, midi_out, 'note_on', 2, pitch_2, 0)
+
+    sched_cause((240 / bpm), nil, 'play_measure', id, i + 1)
+
+//Generates the next measure of quarter notes
+def play_beat(id, i):
+    if id != current_id:
+        display "stopped", id, time_get()
+        return
+
+    if (i < 4)
+        new_note(0)
+        move_harmony(0, 1)
+        new_note(3)
+
+        pitch_0 = (12 * oct[0]) + deg[0] + key
+        pitch_1 = (12 * oct[1]) + deg[1] + key
+        pitch_3 = (12 * oct[3]) + deg[3] + key
+
+        sched_cause(0, midi_out, 'note_on', 0, pitch_0, vol[0])
+        sched_cause((0.99 * 60 / bpm), midi_out, 'note_on', 0, pitch_0, 0)
+
+        sched_cause(0, midi_out, 'note_on', 1, pitch_1, vol[1])
+        sched_cause((0.99 * 60 / bpm), midi_out, 'note_on', 1, pitch_1, 0)
+
+        if (random() > 0.5):
+            sched_cause(0, midi_out, 'note_on', 3, pitch_3, vol[3])
+            sched_cause(1, midi_out, 'note_on', 3, pitch_3, 0)
+
+        sched_cause((60 / bpm), nil, 'play_beat', id, i + 1)
+
+//function for starting and changing activities
+def activity_start(i):
+    current_id = current_id + 1 //stops previous activity
+    play_measure(current_id, i)
+
+##################
+# Running things #
+##################
+
+prefs = Prefs("project3")
+midi_devices = Midi_devices(prefs)
+
+random_seed(int(time_get() * 1000))
+
+sched_init()
+
+//Initial instrument setup
+sched_cause(0, midi_out, 'program', 0, inst[0])
+sched_cause(0, midi_out, 'program', 1, inst[1])
+sched_cause(0, midi_out, 'program', 2, inst[2])
+sched_cause(0, midi_out, 'program', 3, inst[3])
+
+sched_cause(1, nil, 'activity_start', 100)
