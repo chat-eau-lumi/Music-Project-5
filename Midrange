@@ -1,0 +1,28 @@
+# Amy Huo
+# Implements the midrange.
+
+# Midrange takes in 
+# a beat pattern
+# option for arpeggio (ascending/descending)/not/both/alternating
+# staccato?
+# various density stuff
+# and volume for each note (accents)
+
+inversions = [[0, 4, 7], [4, 7, 0], [7, 0, 4]]
+
+fun create_p_track (int den, bool stac) =
+    //optional empty chord
+    if den = 0:
+        p = Track() //With an empty array, no settings and stuff
+        return [p]
+    if den == 1:
+        p = Track() //once per measure
+    if den == 2:
+        p = Track() //follow simple beat pattern, no arpeggio
+    if den == 3:
+        p = Track() //first arpeggio, later not
+    else 
+        p = Track() //probablistic function determining stuff
+        
+p f f r
+        
