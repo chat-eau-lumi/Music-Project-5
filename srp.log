@@ -10,22 +10,15 @@ Debugger invoked.
 -----------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
-Method [32;49m<immediate command 0>[39;49m in class [34;49mnil[39;49m, char 1198 in file 
-    /Users/rbd/doc/class/cmsip/2018/src/projects/p5/p5/cond/conductor.srp
-  29: require "stage" // lots of shared code here with players
+Method [32;49m<immediate command 0>[39;49m in class [34;49mnil[39;49m, char 16 in file 
+    /Users/lisalo/serpent/Music-Project-5/osc_interaction.srp
+   2: require "wxserpent"
       ^
 -----------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
-Method [32;49m<immediate command 1>[39;49m in class [34;49mnil[39;49m, char 100 in file 
-    /Users/rbd/doc/class/cmsip/2018/src/projects/p5/p5/cond/stage.srp
-   7: require "wxserpent"
-      ^
------------------------------------------------------
-Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
------------------------------------------------------
-Method [32;49m<immediate command 2>[39;49m in class [34;49mnil[39;49m, char 128 in file 
-    /Users/rbd/serpent/wxslib/wxserpent.srp
+Method [32;49m<immediate command 1>[39;49m in class [34;49mnil[39;49m, char 128 in file 
+    /Users/lisalo/serpent/wxslib/wxserpent.srp
    5: wxs_event_names = { WXS_MOVE: 'MOVE', 
                           ^
 -----------------------------------------------------

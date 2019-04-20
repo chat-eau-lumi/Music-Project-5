@@ -1,0 +1,64 @@
+require "debug"
+require "wxserpent"
+require "sched"
+require "midi-io"
+require "prefs"
+require "mididevice"
+require "slider"
+
+
+
+allTracks = []
+
+
+def init()
+	prefs = Prefs("project3")
+	midi_devices = Midi_devices(prefs)
+	o2_initialize("incrediblepotatoes", false)
+	o2_clock_set()
+	sched_o2_enabled = true
+	//Create an OSC port, redirect OSC messages to O2 service
+	//Port number: 8347
+	o2_osc_port_new("melody", 8347, false)
+	//Create O2 service, add handlers
+	o2_service_new("melody")
+
+
+def installHandler()
+ 	print "Listening for all OSC messages to port", osc_port 
+ 	o2_method_new("/melody/hp/*", "i", 'reGen', true)
+ 	o2_method_new("/melody/te/*", "i", 'trackEdit', true)
+
+
+
+
+def makeTrack(time,address,types,int_param):
+	if (address == "/melody/hp/rhythm")
+		allTracks.append(track([], 50, "rhythm"))
+	elif (address == "/melody/hp/melody")
+		allTracks.append(track([],50, "melody"))
+	elif (address == "/melody/hp/harmony")
+		allTracks.append(track([],50,"harmony"))
+
+
+def trackEdit(time,address,types,rest parameters):
+	if (address == "/melody/te/setTrack")
+		if (parameters[0]==1)
+			currentTrack = int(subseq(address,0, len(address)-2))
+	if (address== "/melody/te/muteTrack")
+		allTracks[currentTrack].changeVol(0)
+	if (address == "melody/te/deleteTrack")
+		allTracks.remove(allTracks(currentTrack))
+	if (address == "melody/te/pitchRange")
+		allTracks[currentTrack].changeOctave(parameters[0])
+	if (address == "melody/te/noteDensity")
+		allTracks[currentTrack].changeDensity(parameters[0])
+	if (address == "melody/te/volume")
+		allTracks[currentTrack].changeVolume(parameters[0])
+	if (address == "melody/te/instr*")
+		typeTrack = allTracks[currentTrack].getType()
+		if (typeTrack == "rhythm")
+			valInstr= subseq(address,0,len(address)-2)
+			if (valInstr == 0)
+				allTracks[currentTrack].changeInstrument(80)
+init()

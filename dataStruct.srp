@@ -1,0 +1,96 @@
+# Required files to work on
+require "debug"
+require "midi-io"
+require "prefs"
+
+# Global variables
+MIN_PITCH = 0;
+MAX_PITCH = 12;
+
+# NOTES
+# There are three representation of note pitches to consider: 
+# * "keys" for piano OSC input ((single-character string, int octave))
+# * "pitches" for MIDI pitch values (int)
+# * "notes" octave/interval/key/staccato for music generation (note)
+
+// key is an offset, with c = 0, which may cause some problems but 
+// hopefully shouldn't
+class note:
+    
+    //note is created using pitch and key. staccato is default off
+    def __init__(self, pitch, k, vol, dur):
+        self.octave = (pitch - k) / 12;
+        self.interval = (pitch - k) % 12;
+        self.key = k
+        self.staccato = false
+        self.volume = vol
+        self.duration = dur
+    
+    def note_to_pitch(self):
+        return (12 * octave) + interval + key
+    
+    def staccato_on(self):
+        self.staccato = true
+        
+    def staccato_off(self):
+        self.staccato = false
+        
+def keys_to_note(oscString):
+
+    //not yet implemented
+    return 0;
+
+# DURATION
+# Two values: a starting time (0 is the beginning of the measure). The note is 
+# either
+# held until the next note in the track or played staccato 
+# (very quickly turned off).
+
+//some example durations
+d_table_4_3 = [[0, 1.5, 3], [0, 1.5, 3.5]]
+d_table_4_4 = [[0, 1, 2, 3], [0, 2, 2.5, 3], [1, 1.5, 2, 3]]
+d_table_4_6 = [[0, 1, 1.5, 2, 3, 3.5]]
+
+# TRACK
+# An array of (note, duration, volume) where durations add to either a 
+# half-measure or
+# a multiple of whole measures. Also includes variables for variability, 
+# pitch range, and more stuff TBD.
+
+class track:
+
+    // takes in an array of notes, if have no motif, can key in empty
+    // array which means we need to generate new motif
+    def __init__(self, notes, vari, type):
+        self.array = notes //actually inputting array functionality TBD
+        self.variability = vari
+        self.type = type
+
+        if (type == "melody" or type == "harmony"): 
+            self.instrument = 0x60 #piano
+        else:
+            self.instrument = 0x35 #drum
+
+    def changeVol(self, newRatio):
+        curLen = len(self.array)
+        for x in range(curLen):
+            curNote = self.array[x]
+            curNote.volume = curNote.volume * newRatio
+
+    def changeInstrument(self, newInst):
+        self.instrument = newInst
+
+    def changeDensity(self, newDen):
+        self.density = newDen
+    
+    def changeOctave(self, curOct):
+        curLen = len(self.array)
+        for x in range(curLen):
+           curNote = self.array[x]
+           curNote.octave = curOct
+
+    def getTrack(self):
+        return self.type
+
+
+    
