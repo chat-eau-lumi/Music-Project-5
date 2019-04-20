@@ -55,6 +55,5 @@ class track:
         self.array = [] //actually inputting array functionality TBD
         self.variablity = 0;
         self.pitch_range = (0, 127)
-        self.volume = 50
         
     
