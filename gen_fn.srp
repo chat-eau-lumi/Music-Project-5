@@ -1,0 +1,181 @@
+# playerdemo.srp - example of a bare-bones player
+#
+# Roger B. Dannenberg
+# March 2017
+
+# IMPORTANT: SERVICE must be defined before you load playerbase.srp:
+SERVICE = "demo"
+
+# Now load playerbase.srp
+require "playerbase"
+
+// some simple music generation: Here are some problems with this:
+// - not very interesting
+// - no manual control of anything
+// - does everything: bass, chord, melody, instead of one thing
+// - all piano sounds
+// - cannot handle cur_beats_per_measure properly (assumes 4)
+// - plays absurdly fast at faster tempos
+//
+def play_a_measure()
+    # compute a measure using these variables:
+    #    cur_style - a symbol representing style to play (if
+    #       this is not your style, do not play)
+    #    cur_start_beat - what beat to start on if you are stopped
+    #    cur_stop_beat - what beat to stop on if you have started (you can
+    #       stop slightly late; generally you should not start any notes 
+    #       at or after tm_stop_beat but you can play a short note on 
+    #       tm_stop_beat if it is stylistically sensible.)
+    #    cur_beats_per_measure - the current time signature as an integer
+    #    cur_bps - current beats per second (the vtsched will implement this
+    #       but reading the vtsched timemap slope is not reliable because
+    #       vtsched may be updated instantaneously after this call.
+    #    cur_scale - boolean array representing current scale
+    #    cur_chord - boolean array representing current chord
+    #    cur_bass - integer representing root of chord
+    #
+    display "play_a_measure", cur_beats_per_measure, cur_bps
+    display "    ", cur_scale, cur_chord, cur_bass
+    # Use EPSILON here because comparing floats for equality is not
+    #   reliable without very difficult analysis. So, instead of
+    #   x >= y, we write x + EPSILON > y
+    if cur_style == 'rock'
+        # play something using the root of the chord (cur_bass)
+        midi_out.note(0, 24 + cur_bass, vel(100), 1)
+        sched_select(vtsched)
+        sched_cause(1, midi_out, 'note', 0, 24 + 7 + cur_bass, vel(100), 1)
+        sched_cause(2, midi_out, 'note', 0, 24 + cur_bass, vel(100), 1)
+        sched_cause(3, midi_out, 'note', 0, 24 + 7 + cur_bass, vel(100), 1)
+
+        # play notes from the chord
+        for i = 0 to 12
+            if cur_chord[i]
+                midi_out.note(0, 48 + i, vel(100), 0.5)
+        
+        # pick a random note every 1/16 note (fast). If it's in the
+        # scale then play it, otherwise rest. Start on 2nd beat because
+        # we play the chord on downbeat and it might be nice to keep
+        # chord and "melody" separate so we can hear them clearly in
+        # this demo.
+        for i = 0 to 12 // only 3 beats
+            var pitch = 60 + int(random() * 12)
+            if cur_scale[pitch % 12]
+                sched_select(vtsched)
+                sched_cause(1 + i * 0.25, midi_out, 'note',
+                              0, pitch, vel(100), 0.3)
+
+def play_percussion(int index, str prev_style, float[] user_input): 
+    #default patterns
+    pattern_jazz = [0.5, 1, 0.5, 0.2, 0.8]
+    pattern_tango = [1.5, 1.5, 1, 1.5, 1.5, 1]
+    pattern_waltz = [1, 1, 1]
+    pattern_rhumba = [0.5, 0.25, 0, 0.25, 0, 0.5]
+    pattern_tap = [0.5, 0.5, 0.5, 0.5]]
+    default_patterns = [pattern_jazz, pattern_tango, pattern_waltz, 
+                        pattern_rhumba, pattern_tap]
+
+    default_inst = 0x24
+
+    if (user_input = []):
+        #choose a pattern using user input
+        if (cur_style == 'jazz'):
+            perc_pattern = pattern_jazz
+        else if (cur_style == 'tango'):
+            perc_pattern = pattern_tango
+        else if (cur_style == 'waltz'):
+            perc_pattern = pattern_waltz
+        else if (cur_style == 'rhumba'):
+            perc_pattern = pattern_rhumba
+        else if (cur_style == 'tap'):
+            perc_pattern = pattern_tap
+        else:
+            pattern = irandom(4)
+            perc_pattern = default_patterns[pattern]
+    else:
+        perc_pattern = user_input
+
+    #reset duration to be played only if style changed or out_of_range
+    if (prev_style != cur_style):
+        prev_style = cur_style
+        index = 0
+    if (index > len(perc_pattern)):
+        index = 0
+
+    #play percussion
+    midi_out.note_on(hex(track.get_instrument()), 60, velocity)
+
+    #schedule using current duration
+    sched_cause(perc_pattern[index], nil, 'play_percussion', index++, prev_style)
+        
+def gen_melody_array(bool[] cur_scale):
+    prob = []
+    note_prob = []
+
+    #gnerate array of probabilities of moving from one note to another
+    for note in range(0, len(cur_scale)):
+        if cur_scale[i] == i:
+            note_prob = get_prob(i, scale)
+            prob.append(note_prob)
+        else:
+            prob.append([])
+
+    return prob
+
+def gen_note_prob(int note, bool[] cur_scale):
+    num_notes = len(cur_scale)
+    prob_arr = []
+    
+    #generate probability by considering distance between two notes
+    for i in range(0, num_notes):
+        if (cur_scale[i] == 1):
+            if (i == note):
+                prob_arr.append(irandom(5))
+            else:
+                distance = abs(note - cur_scale[i])-1
+                prob_arr.append(irandom(10 - distance))
+        else:
+            prob_arr.append(0)
+
+     return prob_arr
+
+def get_next_note(int[] prob):
+#return note with max prob for now
+
+    for i in range 0 to len(prob):
+        if prob[i] == max(prob):
+            return i
+
+def play_melody_auto(int index, int note, int prev_note, int[][] prob, 
+                int instr, int[] dur):
+    if (prev_note != 0):
+        midi_out.note_on(hex(instr), prev_note, 0)
+
+    int[] note_prob = prob[note]
+    next_note = get_next_note(note_prob)
+
+    midi_out.note_on(hex(instr), note, velocity)
+    sched_cause(dur[index], nil, 'play_melody', index++, next_note, note, prob, instr, dur) 
+
+def play_melody_user(int index, int[] notes, int[] dur):
+    int instr = track.get_instrument()
+    cur_index = index
+
+    if (index > len(notes)):
+        cur_index = index % len(notes)
+
+    if (index > 0):
+        if (cur_index == 0):
+            midi_out.note_on(hex(instr), notes[len(notes)-1], 0)
+        else:
+            midi_out.note_on(hex(instr), notes[cur_index-1]
+
+    midi_out.note_on(hex(instr), notes[cur_index], velocity)
+    sched_cause(dur[index], nil, 'play_melody_user', index++, notes, dur)
+
+def play_melody():
+    if #user defined melody exists:
+        play_melody_user(0, notes, dur)
+    else:
+        int[][] prob = gen_melody_array(cur_scale)
+        play_melody_auto(0, cur_bass, 0, prob, track.get_instrument(), dur)
+
