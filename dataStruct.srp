@@ -18,22 +18,22 @@ MAX_PITCH = 12;
 class note:
     
     //note is created using pitch and key. staccato is default off
-    def __init__(self, pitch, k, vol, dur):
-        self.octave = (pitch - k) / 12;
-        self.interval = (pitch - k) % 12;
-        self.key = k
-        self.staccato = false
-        self.volume = vol
-        self.duration = dur
+    def init(pitch, k, vol, dur):
+        octave = (pitch - k) / 12;
+        interval = (pitch - k) % 12;
+        key = k
+        staccato = false
+        volume = vol
+        sduration = dur
     
-    def note_to_pitch(self):
+    def note_to_pitch():
         return (12 * octave) + interval + key
     
-    def staccato_on(self):
-        self.staccato = true
+    def staccato_on():
+        staccato = true
         
-    def staccato_off(self):
-        self.staccato = false
+    def staccato_off():
+        staccato = false
         
 def keys_to_note(oscString):
 
@@ -61,36 +61,37 @@ class track:
 
     // takes in an array of notes, if have no motif, can key in empty
     // array which means we need to generate new motif
-    def __init__(self, notes, vari, type):
-        self.array = notes //actually inputting array functionality TBD
-        self.variability = vari
-        self.type = type
+    def init(notes, vari, typ):
+        array = notes //actually inputting array functionality TBD
+        variability = vari
+        type = typ
 
         if (type == "melody" or type == "harmony"): 
-            self.instrument = 0x60 #piano
+            instrument = 0x60 #piano
         else:
-            self.instrument = 0x35 #drum
+            instrument = 0x35 #drum
 
-    def changeVol(self, newRatio):
-        curLen = len(self.array)
+    def changeVol( newRatio):
+        curLen = len(array)
         for x in range(curLen):
-            curNote = self.array[x]
+            curNote = array[x]
             curNote.volume = curNote.volume * newRatio
 
-    def changeInstrument(self, newInst):
-        self.instrument = newInst
+    def changeInstrument( newInst):
+        instrument = newInst
 
-    def changeDensity(self, newDen):
-        self.density = newDen
+    def changeDensity( newDen):
+        density = newDen
     
-    def changeOctave(self, curOct):
-        curLen = len(self.array)
+    def changeOctave(curOct):
+        curLen = len(array)
         for x in range(curLen):
-           curNote = self.array[x]
+           curNote = array[x]
            curNote.octave = curOct
 
-    def getTrack(self):
-        return self.type
-
+    def getTrack():
+        return type
+    def getInstrument():
+        return instrument
 
     

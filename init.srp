@@ -50,108 +50,27 @@ vol = [50, 50, 70, 90]
 #############################
 
 //Initialize O2
-o2_initialize("incrediblepotatoes", false)
+o2_initialize("llo1", false)
 o2_clock_set()
 sched_o2_enabled = true
 
 //Create an OSC port, redirect OSC messages to O2 service
 //Port number: 8347
-o2_osc_port_new("melody", 8347, false)
+o2_osc_port_new("melody", 8050, false)
 
 //Create O2 service, add handlers
 o2_service_new("melody")
 
+o2_method_new("/melody", nil, 'generic_handler', false)
+
 //Transposition buttons
-o2_method_new("/melody/4/2nav2", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav3", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav4", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav5", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav6", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav7", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav8", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav9", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav10", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav11", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav12", "i", 'key_handler', true)
-o2_method_new("/melody/4/2nav13", "i", 'key_handler', true)
+
+
+def generic_handler(timestamp, address, types, rest parameters):
+    display "OSC", timestamp, address, types, parameters
 
 //Does string manipulation to determine new key
-def key_handler(time, address, types, int_param):
-    display "key change"
-    key_cut = subseq(address, 0, len(address) - 1)
-    if (isdigit(key_cut.last()))
-        key = int(address.last()) + 8
-    key = int(address.last()) - 2
 
-//Volume controls (min = 0, max = 100)
-o2_method_new("/melody/2/fader1", "f", 'vol_handler', true)
-o2_method_new("/melody/2/fader2", "f", 'vol_handler', true)
-o2_method_new("/melody/2/fader3", "f", 'vol_handler', true)
-o2_method_new("/melody/2/fader4", "f", 'vol_handler', true)
-
-def vol_handler(time, address, types, float_param):
-    display "volume change"
-    inst = int(address.last()) - 1
-    vol[inst] = int(float_param * 100)
-
-//BPM controls (min = 1, max = 401)
-o2_method_new("/melody/2/fader5", "f", 'bpm_handler', true)
-
-def bpm_handler(time, address, types, float_param):
-    display "bpm change"
-    bpm = int(float_param * 400) + 1
-
-//Arpeggio type controls
-o2_method_new("/melody/4/nav1", "i", 'maj_handler', true)
-o2_method_new("/melody/4/nav2", "i", 'min_handler', true)
-o2_method_new("/melody/4/nav3", "i", 'seven_handler', true)
-o2_method_new("/melody/4/nav4", "i", 'dom_handler', true)
-
-def maj_handler(time, address, types, int_param):
-    display "chord change"
-    arp = arp_MAJ
-
-def min_handler(time, address, types, int_param):
-    display "chord change"
-    arp = arp_MIN
-
-def seven_handler(time, address, types, int_param):
-    display "chord change"
-    arp = arp_7
-
-def dom_handler(time, address, types, int_param):
-    display "chord change"
-    arp = arp_DOM
-
-//Instruments controls
-o2_method_new("/melody/1/push1", "i", 'ins_handler', true)
-o2_method_new("/melody/1/push2", "i", 'ins_handler', true)
-o2_method_new("/melody/1/push3", "i", 'ins_handler', true)
-o2_method_new("/melody/1/push4", "i", 'ins_handler', true)
-o2_method_new("/melody/1/push5", "i", 'ins_handler', true)
-o2_method_new("/melody/1/push6", "i", 'ins_handler', true)
-o2_method_new("/melody/1/push7", "i", 'ins_handler', true)
-
-def ins_handler(time, address, types, i_param):
-    display "instrument change"
-    inst = INST[int(address.last()) - 1]
-    sched_cause(0, midi_out, 'program', 0, inst[0])
-    sched_cause(0, midi_out, 'program', 1, inst[1])
-    sched_cause(0, midi_out, 'program', 2, inst[2])
-    sched_cause(0, midi_out, 'program', 3, inst[3])
-
-//Computer GUI: start and stop buttons
-button = Button(0, "Stop", 5, 5, 75, 30)
-button.method = 'stop_pressed'
-
-def stop_pressed(obj, event, x, y):
-    current_id = current_id + 1
-
-button = Button(0, "Start", 5, 45, 75, 30)
-button.method = 'start_pressed'
-
-def start_pressed(obj, event, x, y):
-    activity_start(100)
 
 ###############################
 # Scheduling helper functions #
