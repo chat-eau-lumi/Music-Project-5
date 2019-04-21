@@ -129,10 +129,6 @@ def gen_note_prob(int note, bool[] cur_scale):
     for i in range(0, num_notes):
         if (cur_scale[i] == 1):
             if (i == note):
-                prob_arr.append(irandom(5))
-            else:
-                distance = abs(note - cur_scale[i])-1
-                prob_arr.append(irandom(10 - distance))
         else:
             prob_arr.append(0)
 
@@ -178,4 +174,3 @@ def play_melody():
     else:
         int[][] prob = gen_melody_array(cur_scale)
         play_melody_auto(0, cur_bass, 0, prob, track.get_instrument(), dur)
-
