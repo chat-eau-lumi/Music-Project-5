@@ -16,8 +16,6 @@ Frame variables: {time: 6.39, period: nil}
  173:         o2_poll()
                      ^
 -----------------------------------------------------
-Method [32;49mo2_poll[39;49m in class [34;49mnil[39;49m
------------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
 Method [32;49mgeneric[39;49m in class [34;49mnil[39;49m, char 1157 in file 
@@ -39,4 +37,3 @@ Frame variables: {tr: 0, v: 0, i: 0}
                                   ^
 -----------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
-[31;49mtype error, expected Object[39;49m
