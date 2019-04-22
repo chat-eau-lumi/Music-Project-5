@@ -16,8 +16,6 @@ Frame variables: {time: 6.994, period: nil}
  173:         o2_poll()
                      ^
 -----------------------------------------------------
-Method [32;49mo2_poll[39;49m in class [34;49mnil[39;49m
------------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
 Method [32;49mgeneric[39;49m in class [34;49mnil[39;49m, char 1157 in file 
@@ -44,4 +42,7 @@ Method [32;49mnote_to_pitch[39;49m in class [34;49mnote[39;49m, char 820 in 
                      ^
 -----------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
+<<<<<<< HEAD
 [31;49mglobal variable is unbound - pitch[39;49m
+=======
+>>>>>>> 12ff047823198d6cd5f0bffe410a1425cad71618

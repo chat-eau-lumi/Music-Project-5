@@ -8,6 +8,8 @@ SERVICE = "demo"
 
 # Now load playerbase.srp
 require "playerbase"
+require "osc_interaction"
+require "gen_fd"
 
 // some simple music generation: Here are some problems with this:
 // - not very interesting
@@ -39,27 +41,10 @@ def play_a_measure()
     # Use EPSILON here because comparing floats for equality is not
     #   reliable without very difficult analysis. So, instead of
     #   x >= y, we write x + EPSILON > y
-    if cur_style == 'rock'
-        # play something using the root of the chord (cur_bass)
-        midi_out.note(0, 24 + cur_bass, vel(100), 1)
-        sched_select(vtsched)
-        sched_cause(1, midi_out, 'note', 0, 24 + 7 + cur_bass, vel(100), 1)
-        sched_cause(2, midi_out, 'note', 0, 24 + cur_bass, vel(100), 1)
-        sched_cause(3, midi_out, 'note', 0, 24 + 7 + cur_bass, vel(100), 1)
-
-        # play notes from the chord
-        for i = 0 to 12
-            if cur_chord[i]
-                midi_out.note(0, 48 + i, vel(100), 0.5)
+    if cur_style == 'rock':
+        # start playing standard track before initializing OSC
+        #sched_select(vtsched)
+        #sched_cause(real_delay(1), nil, 'play_melody')
+        initializeOSC()
         
-        # pick a random note every 1/16 note (fast). If it's in the
-        # scale then play it, otherwise rest. Start on 2nd beat because
-        # we play the chord on downbeat and it might be nice to keep
-        # chord and "melody" separate so we can hear them clearly in
-        # this demo.
-        for i = 0 to 12 // only 3 beats
-            var pitch = 60 + int(random() * 12)
-            if cur_scale[pitch % 12]
-                sched_select(vtsched)
-                sched_cause(1 + i * 0.25, midi_out, 'note',
-                              0, pitch, vel(100), 0.3)
+
