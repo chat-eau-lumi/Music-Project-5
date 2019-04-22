@@ -81,6 +81,13 @@ def play_percussion_auto(index, prev_style, curTrack):
     if (index > len(perc_pattern)-1):
         index = index % len(perc_pattern)
 
+    #for i from 0 to 5:
+     #for j from 0 to len(perc_pattern):
+      #cur_note = curTrack.arr[i][j] 
+      #cur_note = 60
+      #cur_note.sduration = perc_pattern[j]
+    #return curTrack
+
     #play percussion
     midi_out.note_on(instr, 60, 80)
 
@@ -153,7 +160,12 @@ def play_melody_auto(index, note, prev_note, prob, curTrack):
     display "playing"
     #instr = 96
     instr = curTrack.getInstrument()
-    
+   
+    #for i from 0 to 5:
+        #for j from 0 to 8:
+            #curTrack[i][j] = note
+    #return curTrack
+
     if (prev_note != -1):
         midi_out.note_on(instr, prev_note, 0)
 
@@ -171,6 +183,7 @@ def play_melody_auto(index, note, prev_note, prob, curTrack):
 
     display "done playing"
     dur = irandom(10)
+    #dur = 1
     #if dur > 2:
     dur = dur/7
     display dur
