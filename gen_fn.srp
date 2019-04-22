@@ -1,3 +1,5 @@
+require dataStruct.srp
+
 # gen_fn.srp - fns generating percussion and melody
 #
 
@@ -20,6 +22,8 @@
     # Use EPSILON here because comparing floats for equality is not
     #   reliable without very difficult analysis. So, instead of
     #   x >= y, we write x + EPSILON > y
+
+track = track()
 
 def play_percussion(index, prev_style): 
     #default patterns
