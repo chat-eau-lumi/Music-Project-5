@@ -25,15 +25,16 @@ require dataStruct.srp
 
 track = track()
 
-def play_percussion(index, prev_style): 
-    #default patterns
-    pattern_jazz = [0.5, 1, 0.5, 0.2, 0.8]
-    pattern_tango = [1.5, 1.5, 1, 1.5, 1.5, 1]
-    pattern_waltz = [1, 1, 1]
-    pattern_rhumba = [0.5, 0.25, 0, 0.25, 0, 0.5]
-    pattern_tap = [0.5, 0.5, 0.5, 0.5]
-    default_patterns = [pattern_jazz, pattern_tango, pattern_waltz, 
-                        pattern_rhumba, pattern_tap]
+#default patterns
+pattern_jazz = [0.5, 1, 0.5, 0.2, 0.8]
+pattern_tango = [1.5, 1.5, 1, 1.5, 1.5, 1]
+pattern_waltz = [1, 1, 1]
+pattern_rhumba = [0.5, 0.25, 0, 0.25, 0, 0.5]
+pattern_tap = [0.5, 0.5, 0.5, 0.5]
+default_patterns = [pattern_jazz, pattern_tango, pattern_waltz, 
+                    pattern_rhumba, pattern_tap]
+
+def play_percussion(index, prev_style):
 
     instr = track.getInstrument()
 
@@ -124,7 +125,7 @@ def play_melody_auto(index, note, prev_note, prob, instr, dur):
     note_prob = prob[note]
     next = get_next_note(note_prob, prev_note)
 
-    midi_out.note_on(hex(instr), note, velocity)
+    midi_out.note_on(hex(instr), note, vel(100))
     index = index + 1
 
     sched_cause(dur[index], nil, 'play_melody', index, cur_scale[next], note, prob, instr, dur) 
