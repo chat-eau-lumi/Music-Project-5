@@ -47,6 +47,15 @@ class note:
     def getVolume()
         return volume
     
+    def setVolume(newVol)
+        if newVol>127:
+            volume=127
+        elif newVal <0:
+            volume = 0
+        else
+            volume = int(newVol)
+
+    
     
 
 def keys_to_note(oscString):
@@ -81,9 +90,9 @@ class track:
 
     def changeVol( newRatio):
         curLen = len(array)
-        for x in range(curLen):
-            curNote = array[x]
-            curNote.volume = curNote.volume * newRatio
+        for x=0 to (curLen):
+            curNote = array[x][0]
+            curNote.setVolume(curNote.getVolume()*newRatio)
 
     def changeInstrument( newInst):
         instrument = newInst
@@ -93,7 +102,7 @@ class track:
     
     def changeOctave(curOct):
         curLen = len(array)
-        for x in range(curLen):
+        for x=0 to curLen:
            curNote = array[x]
            curNote.octave = curOct
 
