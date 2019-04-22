@@ -126,7 +126,7 @@ def play_melody_auto(index, note, prev_note, prob, instr, dur):
     sched_cause(dur[index], nil, 'play_melody', index, cur_scale[next], note, prob, instr, dur) 
 
 def play_melody_user(index, arr):
-    instr = track.get_instrument()
+    instr = track.getInstrument()
     cur_index = index
 
     if (index > len(arr)):
@@ -158,6 +158,6 @@ def play_melody():
         play_melody_user(0, track.array)
     else:
         prob = gen_melody_array(cur_scale)
-        play_melody_auto(0, cur_bass, 0, prob, track.get_instrument(), dur)
+        play_melody_auto(0, cur_bass, 0, prob, track.getInstrument(), dur)
 
 
