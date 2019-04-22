@@ -16,25 +16,37 @@ MAX_PITCH = 12;
 // key is an offset, with c = 0, which may cause some problems but 
 // hopefully shouldn't
 class note:
+    var pitch
+    var key
+    var staccato
+    var volume
+    var durat
     
     //note is created using pitch and key. staccato is default off
-    def init(pitch, k, vol, dur):
-        octave = (pitch - k) / 12;
-        interval = (pitch - k) % 12;
+    def init(pit, k, vol, dur):
+        pitch = pit
         key = k
         staccato = false
         volume = vol
-        sduration = dur
+        durat = dur
     
     def note_to_pitch():
-        return (12 * octave) + interval + key
+        return pitch
     
     def staccato_on():
         staccato = true
         
     def staccato_off():
         staccato = false
-        
+
+    def getDuration()
+        return durat
+
+    def getVolume()
+        return volume
+    
+    
+
 def keys_to_note(oscString):
 
     //not yet implemented
@@ -93,5 +105,10 @@ class track:
         return type
     def getInstrument():
         return instrument
+
+    def getArray():
+        return array
+
+
 
     
