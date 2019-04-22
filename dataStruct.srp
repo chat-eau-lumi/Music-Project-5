@@ -19,14 +19,16 @@ class note:
 
     var key
     var staccato
-    var volume
     var sduration
     var pitchC
+    
+    //a note's inherent volume
+    var volume
+    //changes to the volume; i.e. slider control, etc.
     var volFactor
     
     //note is created using pitch and key. staccato is default off
     def init(pit, k, vol, dur):
-
         key = k
         staccato = false
         volume = vol
@@ -55,7 +57,12 @@ class note:
     def setVolume(newVol)
         volFactor=newVol
 
-    
+//creates a note identical to orig but with a new pitch
+def new_pitch_note(note orig, int pitch):
+    new_p = note(pitch, orig.key, orig.volume, orig.sduration)
+    if (orig.staccato):
+        new_p.staccato_on()
+    new_p.setVolume(orig.volFactor)
     
 
 def keys_to_note(oscString):
@@ -127,7 +134,28 @@ class track:
             curNote = array[x][0]
             curNote.setVolume(newRatio*trackVolFactor)
 
+//really only effective for larger changes
+//changes volume directly
+//requires that fin is small enough to NOT cause integer overflow
+//changes current track, does not create a new one
+fun crescendo(Track change, int fin):
+    for j = 0 to len(change):
+        for k = 0 to len(change[j]):
+            if (change[j][k].volume + (j / len(change)) < MAX_PITCH):
+                change[j][k].volume = change[j][k].volume + (j / len(change))
+            else:
+                change[k].volume = MAX_PITCH
+        
+fun decrescendo(Track change, int fin):
+    for j = 0 to len(change):
+        for k = 0 to len(change[j]):
+            if (change[j][k].volume - (j / len(change)) > 0):
+                change[j][k].volume = change[j][k].volume - (j / len(change))
+            else:
+                change[k].volume = 0
 
-
-
-    
+//makes each note last half as long
+fun doubletime(Track change):
+    for j = 0 to len(change):
+        for k = 0 to len(change[j]):
+            change[k].sduration = change[k].sduration / 2.0)
