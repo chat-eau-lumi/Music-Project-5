@@ -99,6 +99,7 @@ class track:
 
     def getTrack():
         return type
+
     def getInstrument():
         return instrument
 

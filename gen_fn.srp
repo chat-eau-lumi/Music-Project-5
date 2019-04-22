@@ -3,6 +3,10 @@ require "sched"
 require "prefs"
 require "midi-io"
 require "mididevice"
+require "wxserpent"
+require "slider"
+require "debug"
+
 
 # gen_fn.srp - fns generating percussion and melody
 #
