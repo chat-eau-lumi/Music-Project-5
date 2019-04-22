@@ -16,6 +16,14 @@ MAX_PITCH = 12;
 // key is an offset, with c = 0, which may cause some problems but 
 // hopefully shouldn't
 class note:
+
+    var octave
+    var interval
+    var key
+    var staccato
+    var volume
+    var sduration
+    var pitchC
     
     //note is created using pitch and key. staccato is default off
     def init(pitch, k, vol, dur):
@@ -25,6 +33,7 @@ class note:
         staccato = false
         volume = vol
         sduration = dur
+        pitchC = pitch
     
     def note_to_pitch():
         return (12 * octave) + interval + key
@@ -40,17 +49,6 @@ def keys_to_note(oscString):
     //not yet implemented
     return 0;
 
-# DURATION
-# Two values: a starting time (0 is the beginning of the measure). The note is 
-# either
-# held until the next note in the track or played staccato 
-# (very quickly turned off).
-
-//some example durations
-d_table_4_3 = [[0, 1.5, 3], [0, 1.5, 3.5]]
-d_table_4_4 = [[0, 1, 2, 3], [0, 2, 2.5, 3], [1, 1.5, 2, 3]]
-d_table_4_6 = [[0, 1, 1.5, 2, 3, 3.5]]
-
 # TRACK
 # An array of (note, duration, volume) where durations add to either a 
 # half-measure or
@@ -58,6 +56,11 @@ d_table_4_6 = [[0, 1, 1.5, 2, 3, 3.5]]
 # pitch range, and more stuff TBD.
 
 class track:
+
+    var array
+    var variability
+    var type
+    var instrument 
 
     // takes in an array of notes, if have no motif, can key in empty
     // array which means we need to generate new motif
