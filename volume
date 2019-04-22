@@ -1,0 +1,28 @@
+# Volume functions n stuff, if they're wanted
+
+fun inc_vol(Track change, int amt):
+    for k from 0 to len(change):
+        change[k].vol = change[k].vol + amt
+        
+fun dec_vol(Track change, int amt):
+    for k from 0 to len(change):
+        change[k].vol = change[k].vol - amt
+
+//really only effective for larger changes
+fun crescendo(Track change, int fin):
+    for k from 0 to len(change):
+        if (change[k].vol - (amt / len(change)) <= MAX_PITCH):
+            change[k].vol = change[k].vol + (amt / len(change))
+        else:
+            change[k].vol = MAX_PITCH
+        
+fun decrescendo(Track change, int fin):
+    for k from 0 to len(change):
+        if (change[k].vol - (amt / len(change)) >= 0):
+            change[k].vol = change[k].vol - (amt / len(change))
+        else:
+            change[k].vol = 0
+            
+fun doubletime(Track change):
+    for k from 0 to len(change):
+        change[k].vol = change[k].vol - (amt / 2.0)
