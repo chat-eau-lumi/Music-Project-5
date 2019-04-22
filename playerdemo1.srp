@@ -10,6 +10,8 @@ SERVICE = "demo"
 require "playerbase"
 require "dataStruct"
 
+syncMode = 1
+
 // some simple music generation: Here are some problems with this:
 // - not very interesting
 // - no manual control of anything
@@ -41,7 +43,10 @@ def play_a_measure()
     #   reliable without very difficult analysis. So, instead of
     #   x >= y, we write x + EPSILON > y
     if cur_style == 'rock':
+      syncMode = 0
       play_melody()
+    else:
+      syncMode = 1
               
 #default patterns
 pattern_jazz = [0.5, 1, 0.5, 0.2, 0.8]
@@ -143,36 +148,49 @@ def get_next_note(prob, prev_note):
     if prev_note > 1: 
         if prob[prev_note] <= 0:
             new_prob = irandom(abs(next_note-prev_note))       
+            if new_prob ==0:
+                new_prob = abs(next_note-prev_note)
+            prob[prev_note] = new_prob
+        else:
+            prob[prev_note] = prob[prev_note] + 1
+    prob[next_note] = prob[next_note] - 2
+    return next_note
             
 def play_melody_auto(index, note, prev_note, prob, curTrack):
     sched_select(vtsched)
 
     display "playing"
+    display syncMode
     #instr = 96
     instr = curTrack.getInstrument()
     
     if (prev_note != -1):
         midi_out.note_on(instr, prev_note, 0)
 
-    index = index % len(cur_scale)
+    if (cur_style != 'rock') 
+        display "returning"
+        return
 
-    display note
-    note_prob = prob[note]
-    next = get_next_note(note_prob, prev_note)
-    display "done next"
+    else:
+      index = index % len(cur_scale)
 
-    display instr
-    midi_out.note_on(instr, 60 + note, 100)
-    index = index + 1
-    display next
+      display note
+      note_prob = prob[note]
+      next = get_next_note(note_prob, prev_note)
+      display "done next"
 
-    display "done playing"
-    dur = irandom(10)
-    #if dur > 2:
-    dur = dur/7
-    display dur
+      display instr
+      midi_out.note_on(instr, 60 + note, 100)
+      index = index + 1
+      display next
 
-    sched_cause(dur, nil, 'play_melody_auto', index, next, note, prob, curTrack) 
+      display "done playing"
+      dur = irandom(10)
+      #if dur > 2:
+      dur = dur/7
+      display dur
+
+      sched_cause(dur, nil, 'play_melody_auto', index, next, note, prob, curTrack) 
 
 def play_melody_user(index, curTrack):
 
