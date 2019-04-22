@@ -1,0 +1,9 @@
+# Volume functions
+
+fun inc_vol(Track change, int amt):
+    for k from 0 to len(change):
+        change[k].vol == change[k].vol + amt
+        
+fun dec_vol(Track change, int amt):
+    for k from 0 to len(change):
+        change[k].vol == change[k].vol - amt
