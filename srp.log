@@ -12,27 +12,27 @@ Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
 Method [32;49msched_poll[39;49m in class [34;49mnil[39;49m, char 7354 in file 
     /Users/lisalo/serpent/lib/sched.srp
-Frame variables: {time: 8.544, period: nil}
+Frame variables: {time: 77.468, period: nil}
  169:     rtsched.poll(time)
                       ^
 -----------------------------------------------------
 Method [32;49mpoll[39;49m in class [34;49mScheduler[39;49m, char 12401 in file 
     /Users/lisalo/serpent/lib/sched.srp
-Frame variables: {when: 8.544, event: [8.544, <obj@0x11550c920>, 'note_on', [0, 60, 99.3253]], target: <obj@0x11550c920>, message: 'note_on', parms: [0, 60, 99.3253]}
+Frame variables: {when: 77.468, event: [77.468, <obj@0x10f2b4920>, 'program', [1, nil]], target: <obj@0x10f2b4920>, message: 'program', parms: [1, nil]}
  304:             general_apply(target, message, parms)
                                ^
 -----------------------------------------------------
 Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 28059 in file 
     /Users/lisalo/serpent/lib/sched.srp
-Frame variables: {target: <obj@0x11550c920>, message: 'note_on', parms: [0, 60, 99.3253]}
+Frame variables: {target: <obj@0x10f2b4920>, message: 'program', parms: [1, nil]}
  683:         sendapply(target, message, parms)
                                                ^
 -----------------------------------------------------
-Method [32;49mnote_on[39;49m in class [34;49mMidi_out[39;49m, char 7700 in file 
+Method [32;49mprogram[39;49m in class [34;49mMidi_out[39;49m, char 8994 in file 
     /Users/lisalo/serpent/programs/midi-io.srp
-Frame variables: {chan: 0, key: 60, loud: 99.3253, ticks: 8543, i: 60, count: 0}
- 180:                         chr(midi_status_noteon + chan) + chr(key) + chr(loud))
-                                                                                   ^
+Frame variables: {chan: 1, program: nil, bank_lsb: nil, bank_msb: nil, ticks: 77468}
+ 206:                                       chr(program) )
+                                                        ^
 -----------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 [31;49mtype error, expected Integer[39;49m

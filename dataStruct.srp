@@ -22,6 +22,7 @@ class note:
     var volume
     var sduration
     var pitchC
+    var volFactor
     
     //note is created using pitch and key. staccato is default off
     def init(pit, k, vol, dur):
@@ -30,7 +31,8 @@ class note:
         staccato = false
         volume = vol
         sduration = dur
-        pitchC = pit  
+        pitchC = pit 
+        volFactor=1 
 
     def note_to_pitch():
         return pitchC
@@ -45,15 +47,13 @@ class note:
         return sduration
 
     def getVolume()
-        return volume
+        if volume*volFactor>127:
+            return 127 
+        else
+            return int(volume*volFactor)
     
     def setVolume(newVol)
-        if newVol>127:
-            volume=127
-        elif newVal <0:
-            volume = 0
-        else
-            volume = int(newVol)
+        volFactor=newVol
 
     
     
@@ -75,6 +75,8 @@ class track:
     var variability
     var type
     var instrument 
+    var trackVolFactor
+    var newRatio
 
     // takes in an array of notes, if have no motif, can key in empty
     // array which means we need to generate new motif
@@ -82,17 +84,20 @@ class track:
         array = notes //actually inputting array functionality TBD
         variability = vari
         type = typ
+        trackVolFactor=1
+        newRatio=1
 
         if (type == "melody" or type == "harmony"): 
             instrument = 0x60 #piano
         else:
             instrument = 0x35 #drum
 
-    def changeVol( newRatio):
+    def changeVol( newR):
+        newRatio=newR
         curLen = len(array)
         for x=0 to (curLen):
             curNote = array[x][0]
-            curNote.setVolume(curNote.getVolume()*newRatio)
+            curNote.setVolume(newRatio*trackVolFactor)
 
     def changeInstrument( newInst):
         instrument = newInst
@@ -114,6 +119,14 @@ class track:
 
     def getArray():
         return array
+    
+    def changeVolFactor(newVol)
+        trackVolFactor=newVol
+        curLen = len(array)
+        for x=0 to (curLen):
+            curNote = array[x][0]
+            curNote.setVolume(newRatio*trackVolFactor)
+
 
 
 

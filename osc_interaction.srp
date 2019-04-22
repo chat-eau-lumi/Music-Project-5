@@ -76,35 +76,46 @@ def makeTrack(timestamp,address,types,rest parameters):
 		allTracks.append(track([],50,"harmony"))
 	elif (find(address,"style")!=-1)
 		style = subseq(style,-1,len(address))
-	elif (address=="/melody/hp/volume")
-		volume = parameters[0][0]
+	elif (address=="/melody/hp/Volume")
+		display("v")
+		for i =0 to len(allTracks)
+			allTracks[i].changeVolFactor(parameters[0][0])
 
 def trackEdit(timestamp,address,types,rest parameters):
 	display "trackEdit", timestamp, address, types, parameters
-	if (address == "/melody/te/setTrack")
-		if (parameters[0]==1)
+	if (find(address,"setTrack")!=-1)
+		if (parameters[0]==[1])
 			currTrackP1 = int(subseq(address,-3,-2))
 			currTrackP2= int(subseq(address,-1,len(address)))
-			currentTrack=(currTrackP1-1)*4+(p2-1)
-	if (address== "/melody/te/muteTrack")
-		allTracks[currentTrack].changeVol(0)
-	if (address == "/melody/te/deleteTrack")
-		allTracks.remove(allTracks(currentTrack))
+			currentTrack=(currTrackP2-1)*4+(currTrackP1-1)
+			display (currentTrack)
+	if (address == "/melody/te/muteButton")
+		if len(allTracks)>currentTrack
+			if parameters[0]==[1]
+				allTracks[currentTrack].changeVol(0)
+			else
+				allTracks[currentTrack].changeVol(1)
+	if (address == "/melody/te/deleteButton")
+		if len(allTracks)>currentTrack
+			allTracks.remove(allTracks[currentTrack])
 	if (address == "/melody/te/pitchRange")
-		allTracks[currentTrack].changeOctave(parameters[0])
+		if len(allTracks)>currentTrack
+			allTracks[currentTrack].changeOctave(parameters[0])
 	if (address == "/melody/te/noteDensity")
-		allTracks[currentTrack].changeDensity(parameters[0])
+		if len(allTracks)>currentTrack
+			allTracks[currentTrack].changeDensity(parameters[0])
 	if (address == "/melody/te/volume")
-		print("volume")
-		allTracks[currentTrack].changeVol(parameters[0][0])
-	if (address == "/melody/te/instr*")
-		typeTrack = allTracks[currentTrack].getType()
-		p2 = subseq(address,-1,len(address))
-		p1 = subseq(address,-3,-2)
-		if (typeTrack == "rhythm")
-			allTracks[currentTrack].changeInstrument(getRhythmInstrument(p1,p2))
-		elif (typeTrack == "melody")
-			allTracks[currentTrack].changeInstrument(getMelodyInstrument(p1,p2))
+		if len(allTracks)>currentTrack
+			allTracks[currentTrack].changeVol(parameters[0][0])
+	if (find(address,"instr")!=-1)
+		if len(allTracks)>currentTrack
+			typeTrack = allTracks[currentTrack].getTrack()
+			p2 = int(subseq(address,-1,len(address)))
+			p1 = int(subseq(address,-3,-2))
+			if (typeTrack == "rhythm")
+				allTracks[currentTrack].changeInstrument(getRhythmInstrument(p1,p2))
+			elif (typeTrack == "melody")
+				allTracks[currentTrack].changeInstrument(getMelodyInstrument(p1,p2))
 
 def getRhythmInstrument(p1,p2):
 	if p1 == 1:
@@ -214,12 +225,7 @@ def insertMelody(timestamp,address,types,rest parameters):
 			allTracks[len(allTracks)-1].changeInstrument(instrMel)
 			playBack(len(allTracks)-1,0)
 			resetMelody()
-			//melRhythmRaw=[]			
-			//melNotes=[]
-			//melRhythm=[]
-			//variMel=50
 			recordMel=false
-			//melTrackMotif=[]
 	elif (find(address,"key")!=-1)
 		if find(address,"rest")!=-1:
 			if (parameters[0]==1)
@@ -228,20 +234,21 @@ def insertMelody(timestamp,address,types,rest parameters):
 		else:
 			pitch = int(subseq(address,-2,len(address)))
 			octave= int(subseq(address,-6,-5))*12
+			if parameters[0]==[1]:
+				sched_cause(0,midi_out,'program',len(allTracks),instrMel)
+				sched_cause(0,midi_out,'note_on',len(allTracks),pitch+octave,100)
+			if parameters[0]==[0]:
+				sched_cause(0,midi_out,'note_on',len(allTracks),pitch+octave,0)
 			if subseq(address,-2,len(address))=="08" 
 				pitch=8
 			elif subseq(address,-2,len(address))=="09"
 				pitch=9
 			if (recordMel)		
 				if parameters[0]==[1]:
-					sched_cause(0,midi_out,'program',0,instrMel)
-					sched_cause(0,midi_out,'note_on',0,pitch+octave,100)
 					melRhythmRaw.append(time_get())
 					melNotes.append(pitch+octave)
-				if parameters[0]==[0]:
-					sched_cause(0,midi_out,'note_on',0,pitch+octave,0)
+				
 	elif (find(address,"instr")!=-1)
-		print("changeInstrument")
 		p2 = subseq(address,-1,len(address))
 		p1 = subseq(address,-3,-2)
 		instrMel=getMelodyInstrument(int(p1),int(p2))
@@ -249,9 +256,9 @@ def insertMelody(timestamp,address,types,rest parameters):
 def insertRhythm(timestamp,address,types,rest parameters):
 	display "rhythm", timestamp, address, types, parameters
 	if (address == "/melody/rm/pushPad")
-		sched_cause(0,midi_out,'program',0,trackInstr)
-		sched_cause(0,midi_out,'note_on',0,trackInstr,60)
-		sched_cause(1,midi_out,'note_on',0,trackInstr,0)
+		sched_cause(0,midi_out,'program',len(allTracks),trackInstr)
+		sched_cause(0,midi_out,'note_on',len(allTracks),60,60)
+		sched_cause(1,midi_out,'note_on',len(allTracks),60,0)
 		if (recording)
 			genRhythm.append(time_get())
 	if (address == "/melody/rm/record") 
@@ -271,31 +278,27 @@ def insertRhythm(timestamp,address,types,rest parameters):
 			allTracks.append(track(trackMotif, vari, "rhythm"))
 			allTracks[len(allTracks)-1].changeInstrument(trackInstr)
 			resetRhythm()
-			//genRhythm=[]
-			//newRealRhythm=[]
-			//vari=50
-			//trackMotif=[]
-			//recording=false
 			playBack(len(allTracks)-1,0)
 	if (find(address,"instr")!=-1)
-		print("instrument")
 		p2 = subseq(address,-1,len(address))
 		p1 = subseq(address,-3,-2)
 		trackInstr=getRhythmInstrument(int(p1),int(p2))
-		print(trackInstr)
 		
 
 
 def playBack(tr,v)
-	notesList = allTracks[tr].getArray()
-	for i=0 to len (notesList)
-		notesList[i][0].note_to_pitch()
-	sched_cause(0,midi_out,'note_on',0,notesList[v][0].note_to_pitch(),notesList[v][0].getVolume())
-	sched_cause(notesList[v][0].getDuration()*(60/tempo)-.1,midi_out,'note_on',0,notesList[v][0].note_to_pitch(),0)
-	if (v<len(notesList)-1)
-		sched_cause(notesList[v][0].getDuration()*(60/tempo),nil,'playBack',tr,v+1)
-	else
-		playBack(tr,0)
+	if len(allTracks)>tr
+		notesList = allTracks[tr].getArray()
+		for i=0 to len (notesList)
+			notesList[i][0].note_to_pitch()
+		if (v == 0) 
+			sched_cause(0,midi_out,'program',tr,allTracks[tr].getInstrument())
+		sched_cause(0,midi_out,'note_on',tr,notesList[v][0].note_to_pitch(),notesList[v][0].getVolume())
+		sched_cause(notesList[v][0].getDuration()*(60/tempo)-.1,midi_out,'note_on',tr,notesList[v][0].note_to_pitch(),0)
+		if (v<len(notesList)-1)
+			sched_cause(notesList[v][0].getDuration()*(60/tempo),nil,'playBack',tr,v+1)
+		else
+			playBack(tr,0)
 
 
 
