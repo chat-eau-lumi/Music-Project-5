@@ -9,7 +9,6 @@
 # and volume for each note (accents)
 
 #TODO: FIGURE OUT GLOBAL VARIABLES, STYLES
-#TODO: FIX MY TRASH ARRAY MANIPULATION
 
 # GLOBAL VARIABLES
 
@@ -51,12 +50,13 @@ fun create_p_track (int den, bool stac, int key, int oct, vol) =
                        0, "chordal") 
     //follow simple beat pattern, no arpeggio
     if den == 2:
-        res_array = [[]]
+        rand = (int)(random() * 3)
+        inver = inversions[rand]
+        r_array = []
         for k from 0 to len:
             n_array.append([Note(oct * 12 + get_c_note(inver[0]) + inv_oct_weights[rand][0], key, vol, curr_style[k]), 
                               Note(oct * 12 + get_c_note(inver[1]) + inv_oct_weights[rand][1], key, vol, curr_style[k]),
                               Note(oct * 12 + get_c_note(inver[2]) + inv_oct_weights[rand][2], key, vol, curr_style[k])])
-        r_array.subseq(1, length(n_array))
         p = Track(r_array, 0, "chordal") 
         return p
         
