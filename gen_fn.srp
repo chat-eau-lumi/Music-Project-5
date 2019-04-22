@@ -163,8 +163,8 @@ def play_melody_auto(index, note, prev_note, prob, curTrack, dur):
 
     display "done playing"
     dur = irandom(10)
-    if dur > 2:
-        dur = dur//10
+    #if dur > 2:
+    dur = dur//6000
 
     sched_cause(dur, nil, 'play_melody_auto', index, next, note, prob, curTrack, dur) 
 
@@ -214,7 +214,7 @@ def play_melody():
     newTrack = track([], 1, "melody")
     prob = gen_melody_array(cur_scale)
     display prob
-    play_melody_auto(0, cur_bass, -1, prob, newTrack, 1)
+    play_melody_auto(0, cur_bass, -1, prob, newTrack, 0.1)
 
 def main():
     sched_init(2)
@@ -227,6 +227,7 @@ def main():
         sched_select(vtsched)
         sched_set_period(0.5)
         sched_cause(real_delay(1), nil, 'play_melody')
+        #sched_cause(real_delay(1), nil, 'play_percussion', 0, "", 'perc')
 
 main()
 
