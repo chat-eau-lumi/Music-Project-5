@@ -23,3 +23,6 @@ fun decrescendo(Track change, int fin):
         else:
             change[k].vol = 0
             
+fun doubletime(Track change):
+    for k from 0 to len(change):
+        change[k].vol = change[k].vol - (amt / 2.0)
