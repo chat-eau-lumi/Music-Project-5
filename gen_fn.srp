@@ -113,7 +113,7 @@ def gen_melody_array(bool[] cur_scale):
 
     #gnerate array of probabilities of moving from one note to another
     for note in range(0, len(cur_scale)):
-        if cur_scale[i] == i:
+        if cur_scale[i] == 1:
             note_prob = get_prob(i, scale)
             prob.append(note_prob)
         else:
@@ -129,6 +129,10 @@ def gen_note_prob(int note, bool[] cur_scale):
     for i in range(0, num_notes):
         if (cur_scale[i] == 1):
             if (i == note):
+                prob_arr.append(irandom(5))
+            else:
+                distance = abs(note - cur_scale[i])-1
+                prob_arr.append(irandom(10 - distance))
         else:
             prob_arr.append(0)
 
@@ -146,31 +150,39 @@ def play_melody_auto(int index, int note, int prev_note, int[][] prob,
     if (prev_note != 0):
         midi_out.note_on(hex(instr), prev_note, 0)
 
+    index = index % len(cur_scale)
+
     int[] note_prob = prob[note]
     next_note = get_next_note(note_prob)
 
     midi_out.note_on(hex(instr), note, velocity)
     sched_cause(dur[index], nil, 'play_melody', index++, next_note, note, prob, instr, dur) 
 
-def play_melody_user(int index, int[] notes, int[] dur):
+def play_melody_user(int index, int[][] arr):
     int instr = track.get_instrument()
     cur_index = index
 
-    if (index > len(notes)):
-        cur_index = index % len(notes)
+    if (index > len(arr)):
+        cur_index = index % len(arr)
+
+    (note, duration, volume) = arr[cur_index][0]
 
     if (index > 0):
         if (cur_index == 0):
-            midi_out.note_on(hex(instr), notes[len(notes)-1], 0)
+            (prev_note, prev_dur, prev_vol) = arr[len(arr)-1][0]
+            midi_out.note_on(hex(instr), prev_note, 0)
         else:
-            midi_out.note_on(hex(instr), notes[cur_index-1]
+            (prev_note, prev_dur, prev_vol) = arr[cur_index-1]
+            midi_out.note_on(hex(instr), prev_note, 0)
 
-    midi_out.note_on(hex(instr), notes[cur_index], velocity)
-    sched_cause(dur[index], nil, 'play_melody_user', index++, notes, dur)
+    midi_out.note_on(hex(instr), note, volume)
+    sched_cause(duration, nil, 'play_melody_user', index++, track.array)
 
 def play_melody():
-    if #user defined melody exists:
-        play_melody_user(0, notes, dur)
+    if track.array != []:
+        play_melody_user(0, track.array)
     else:
         int[][] prob = gen_melody_array(cur_scale)
         play_melody_auto(0, cur_bass, 0, prob, track.get_instrument(), dur)
+
+
