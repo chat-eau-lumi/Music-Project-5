@@ -16,36 +16,22 @@ MAX_PITCH = 12;
 // key is an offset, with c = 0, which may cause some problems but 
 // hopefully shouldn't
 class note:
-<<<<<<< HEAD
-    var pitch
-    var key
-    var staccato
-    var volume
-    var durat
-=======
 
-    var octave
-    var interval
     var key
     var staccato
     var volume
     var sduration
     var pitchC
->>>>>>> 48f2adb79611f88cdc822715faae66e8214a33d8
     
     //note is created using pitch and key. staccato is default off
     def init(pit, k, vol, dur):
-        pitch = pit
+
         key = k
         staccato = false
         volume = vol
-<<<<<<< HEAD
-        durat = dur
-=======
         sduration = dur
-        pitchC = pitch
->>>>>>> 48f2adb79611f88cdc822715faae66e8214a33d8
-    
+        pitchC = pit  
+
     def note_to_pitch():
         return pitch
     
@@ -56,7 +42,7 @@ class note:
         staccato = false
 
     def getDuration()
-        return durat
+        return sduration
 
     def getVolume()
         return volume
