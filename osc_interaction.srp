@@ -25,12 +25,13 @@ recordMel=0
 variMel=0
 instrMel=0
 melTrackMotif=[]
+volume=1
 
 
 
 
 currentTrack = 0
-tempo=120
+tempo=300
 
 def initializeOSC()
 
@@ -75,14 +76,16 @@ def makeTrack(timestamp,address,types,rest parameters):
 		allTracks.append(track([],50,"harmony"))
 	elif (find(address,"style")!=-1)
 		style = subseq(style,-1,len(address))
-
-
+	elif (address=="/melody/hp/volume")
+		volume = parameters[0][0]
 
 def trackEdit(timestamp,address,types,rest parameters):
 	display "OSC", timestamp, address, types, parameters
 	if (address == "/melody/te/setTrack")
 		if (parameters[0]==1)
-			currentTrack = int(subseq(address,-2, len(address)))
+			currTrackP1 = int(subseq(address,-3,-2))
+			currTrackP2= int(subseq(address,-1,len(address)))
+			currentTrack=(currTrackP1-1)*4+(p2-1)
 	if (address== "/melody/te/muteTrack")
 		allTracks[currentTrack].changeVol(0)
 	if (address == "melody/te/deleteTrack")
@@ -101,7 +104,6 @@ def trackEdit(timestamp,address,types,rest parameters):
 			allTracks[currentTrack].changeInstrument(getRhythmInstrument(p1,p2))
 		elif (typeTrack == "melody")
 			allTracks[currentTrack].changeInstrument(getMelodyInstrument(p1,p2))
-
 
 def getRhythmInstrument(p1,p2):
 	if p1 == 1:
@@ -122,53 +124,13 @@ def getMelodyInstrument(p1,p2):
 	if p1 == 1:
 		return p1*p2
 	elif p1 ==2:
-		return 2*106+p2
+		return 65+p2
 	elif p1 == 3:
-		return 117+p2
+		return 72+p2
 	elif p1 == 4:
-		return 122+p2
+		return 40+p2
 	elif p1 == 5:
-		if p2< 4:
-			return 101+p2
-		else:
-			return 128
-
-
-
-def insertRhythm(timestamp,address,types,rest parameters):
-	display "rhythm", timestamp, address, types, parameters
-	if (address == "/melody/rm/pushPad")
-		sched_cause(0,midi_out,'note_on',9,trackInstr,60)
-		if (recording)
-			genRhythm.append(time_get())
-	if (address == "/melody/rm/record") 
-		if parameters[0]==[1]
-			recording = true 
-		else 
-			genRhythm.append(time_get())
-			display len(genRhythm)
-			calcBeats(0)
-			generateNoteList(0)
-			recording = false
-	if (address == "/melody/rm/var")
-		vari= parameters[0]
-	if (address == "/melody/rm/commit")
-		display(newRealRhythm)
-		allTracks.append(track(trackMotif, vari, "rhythm"))
-		allTracks[len(allTracks)-1].changeInstrument(trackInstr)
-		genRhythm=[]
-		newRealRhythm=[]
-		vari=50
-		trackMotif=[]
-		recording=false
-		playBack(len(allTracks)-1,0)
-	if (find(address,"instr")!=-1)
-		p2 = subseq(address,-1,len(address))
-		p1 = subseq(address,-3,-2)
-		trackInstr=getRhythmInstrument(int(p1),int(p2))
-		print(trackInstr)
-		
-
+		return 24+p2
 
 def calcBeats(typeTrack):
 	if (typeTrack == 0)
@@ -213,12 +175,30 @@ def generateNoteList(typeTrack):
 			trackMotif.append([currN])
 	elif typeTrack == 1:
 		for i = 0 to (len(melRhythm)):
-			melTrackMotif.append([note(melNotes[i],0,70,melRhythm[i])])
+			if (melNotes[i]==0)
+				melTrackMotif.append([note(melNotes[i],0,0,melRhythm[i])])
+			else
+				melTrackMotif.append([note(melNotes[i],0,70,melRhythm[i])])
+
+def resetRhythm()
+	genRhythm=[]
+	newRealRhythm=[]
+	vari=50
+	trackMotif=[]
+	recording=false
+
+def resetMelody()
+	melRhythmRaw=[]			
+	melNotes=[]
+	melRhythm=[]
+	variMel=50
+	melTrackMotif=[]
 
 def insertMelody(timestamp,address,types,rest parameters):
 	display "OSC", timestamp, address, types, parameters
 	if (address == "/melody/mc/record") 
 		if parameters[0]==[1]
+			resetMelody()
 			recordMel = true 
 		else 
 			melRhythmRaw.append(time_get())
@@ -232,31 +212,73 @@ def insertMelody(timestamp,address,types,rest parameters):
 			allTracks.append(track(melTrackMotif, variMel, "melody"))
 			allTracks[len(allTracks)-1].changeInstrument(instrMel)
 			playBack(len(allTracks)-1,0)
-			melRhythmRaw=[]			
-			melNotes=[]
-			melRhythm=[]
-			variMel=50
+			resetMelody()
+			//melRhythmRaw=[]			
+			//melNotes=[]
+			//melRhythm=[]
+			//variMel=50
 			recordMel=false
-			melTrackMotif=[]
-
-	elif (find(address,"key"))
-		pitch = int(subseq(address,-2,len(address)))
-		octave= int(subseq(address,-6,-5))*12
-		if subseq(address,-2,len(address))=="08" 
-			pitch=8
-		elif subseq(address,-2,len(address))=="09"
-			pitch=9
-		sched_cause(0,midi_out,'note_on',0,pitch+octave,100)
-		display(pitch*octave)
-		if (recordMel)
-			
-			if parameters[0]==[1]:
+			//melTrackMotif=[]
+	elif (find(address,"key")!=-1)
+		if find(address,"rest")!=-1:
+			if (parameters[0]==1)
 				melRhythmRaw.append(time_get())
-				melNotes.append(pitch+octave)
+				melNotes.append(0)
+		else:
+			pitch = int(subseq(address,-2,len(address)))
+			octave= int(subseq(address,-6,-5))*12
+			if subseq(address,-2,len(address))=="08" 
+				pitch=8
+			elif subseq(address,-2,len(address))=="09"
+				pitch=9
+			if (recordMel)		
+				if parameters[0]==[1]:
+					sched_cause(0,midi_out,'program',0,instrMel)
+					sched_cause(0,midi_out,'note_on',0,pitch+octave,100)
+					melRhythmRaw.append(time_get())
+					melNotes.append(pitch+octave)
+				if parameters[0]==[0]:
+					sched_cause(0,midi_out,'note_on',0,pitch+octave,0)
 	elif (find(address,"instr")!=-1)
+		print("changeInstrument")
 		p2 = subseq(address,-1,len(address))
 		p1 = subseq(address,-3,-2)
-		trackInstr=getMelodyInstrument(int(p1),int(p2))
+		instrMel=getMelodyInstrument(int(p1),int(p2))
+
+def insertRhythm(timestamp,address,types,rest parameters):
+	display "rhythm", timestamp, address, types, parameters
+	if (address == "/melody/rm/pushPad")
+		sched_cause(0,midi_out,'note_on',9,trackInstr,60)
+		if (recording)
+			genRhythm.append(time_get())
+	if (address == "/melody/rm/record") 
+		if parameters[0]==[1]
+			resetRhythm()
+			recording = true 
+		else 
+			genRhythm.append(time_get())
+			display len(genRhythm)
+			calcBeats(0)
+			generateNoteList(0)
+			recording = false
+	if (address == "/melody/rm/var")
+		vari= parameters[0]
+	if (address == "/melody/rm/commit")
+		allTracks.append(track(trackMotif, vari, "rhythm"))
+		allTracks[len(allTracks)-1].changeInstrument(trackInstr)
+		resetRhythm()
+		//genRhythm=[]
+		//newRealRhythm=[]
+		//vari=50
+		//trackMotif=[]
+		//recording=false
+		playBack(len(allTracks)-1,0)
+	if (find(address,"instr")!=-1)
+		p2 = subseq(address,-1,len(address))
+		p1 = subseq(address,-3,-2)
+		trackInstr=getRhythmInstrument(int(p1),int(p2))
+		print(trackInstr)
+		
 
 
 def playBack(tr,v)
