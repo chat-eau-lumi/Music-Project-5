@@ -8,6 +8,8 @@ SERVICE = "demo"
 
 # Now load playerbase.srp
 require "playerbase"
+require "osc_interaction"
+require "gen_fd"
 
 // some simple music generation: Here are some problems with this:
 // - not very interesting
@@ -39,107 +41,10 @@ def play_a_measure()
     # Use EPSILON here because comparing floats for equality is not
     #   reliable without very difficult analysis. So, instead of
     #   x >= y, we write x + EPSILON > y
-    if cur_style == 'rock'
-        # play something using the root of the chord (cur_bass)
-        midi_out.note(0, 24 + cur_bass, vel(100), 1)
-        sched_select(vtsched)
-        sched_cause(1, midi_out, 'note', 0, 24 + 7 + cur_bass, vel(100), 1)
-        sched_cause(2, midi_out, 'note', 0, 24 + cur_bass, vel(100), 1)
-        sched_cause(3, midi_out, 'note', 0, 24 + 7 + cur_bass, vel(100), 1)
-
-        # play notes from the chord
-        for i = 0 to 12
-            if cur_chord[i]
-                midi_out.note(0, 48 + i, vel(100), 0.5)
+    if cur_style == 'rock':
+        # start playing standard track before initializing OSC
+        #sched_select(vtsched)
+        #sched_cause(real_delay(1), nil, 'play_melody')
+        initializeOSC()
         
-        # pick a random note every 1/16 note (fast). If it's in the
-        # scale then play it, otherwise rest. Start on 2nd beat because
-        # we play the chord on downbeat and it might be nice to keep
-        # chord and "melody" separate so we can hear them clearly in
-        # this demo.
-        for i = 0 to 12 // only 3 beats
-            var pitch = 60 + int(random() * 12)
-            if cur_scale[pitch % 12]
-                sched_select(vtsched)
-                sched_cause(1 + i * 0.25, midi_out, 'note',
-                              0, pitch, vel(100), 0.3)
 
-def play_percussion(int index, str prev_style): 
-    #default patterns
-    pattern_jazz = [[0.5, 1, 0.5, 0.2, 0.8, 0.75, 1.25, 0.5, 0.25, 0.25]]
-    pattern_tango = [[1.5, 1.5, 1, 1.5, 1.5, 1]]
-    pattern_waltz = [[1, 1, 1]]
-    pattern_rhumba = [[0.5, 0.25, 0, 0.25, 0, 0.5, 1]]
-    pattern_tap [[0.5, 0.5, 0.5, 0.5]]
-    default_patterns = [pattern_jazz, pattern_tango, pattern_waltz, 
-                        pattern_rhumba, pattern_tap]
-
-    default_inst = 0x24
-
-    #choose a pattern using user input
-    if (cur_style == 'jazz'):
-        perc_pattern = pattern_jazz
-    else if (cur_style == 'tango'):
-        perc_pattern = pattern_tango
-    else if (cur_style == 'waltz'):
-        perc_pattern = pattern_waltz
-    else if (cur_style == 'rhumba'):
-        perc_pattern = pattern_rhumba
-    else if (cur_style == 'tap'):
-        perc_pattern = pattern_tap
-    else:
-        pattern = irandom(4)
-        perc_pattern = default_patterns[pattern]
-
-    #reset duration to be played only if style changed or out_of_range
-    if (prev_style != cur_style):
-        prev_style = cur_style
-        index = 0
-    if (index > len(perc_pattern)):
-        index = 0
-
-    #play percussion
-    midi_out.note_on(default_inst, , velocity)
-
-    #schedule using current duration
-    sched_cause(perc_pattern[index], nil, 'play_percussion', index++, prev_style)
-        
-def gen_melody_array(bool[] cur_scale):
-    prob = []
-    note_prob = []
-
-    #gnerate array of probabilities of moving from one note to another
-    for note in range(0, len(cur_scale)):
-        if cur_scale[i] == i:
-            note_prob = get_prob(i, scale)
-            prob.append(note_prob)
-        else:
-            prob.append([])
-
-    return prob
-
-def note_prob(int note, bool[] cur_scale):
-    num_notes = len(cur_scale)
-    prob_arr = []
-    
-    #generate probability by considering distance between two notes
-    for i in range(0, num_notes):
-        if (cur_scale[i] == 1):
-            if (i == note):
-                prob_arr.append(irandom(5)//10)
-            else:
-                distance = abs(note - cur_scale[i])-1
-                prob_arr.append(irandom(10 - distance)//10)
-        else:
-            prob_arr.append(0)
-
-     return prob_arr
-
-def play_melody(int note, int prev_note, float[][] prob, int instr):
-    if (prev_note != 0):
-        midi_out.note_on(hex(instr), prev_note, 0)
-
-    float[] note_prob = prob[note]
-    next_note = 
-
-    midi_out.note_on(hex(instr), note, velocity)

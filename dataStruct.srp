@@ -33,7 +33,7 @@ class note:
         pitchC = pit  
 
     def note_to_pitch():
-        return pitch
+        return pitchC
     
     def staccato_on():
         staccato = true
@@ -99,6 +99,7 @@ class track:
 
     def getTrack():
         return type
+
     def getInstrument():
         return instrument
 
