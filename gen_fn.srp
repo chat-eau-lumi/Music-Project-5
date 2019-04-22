@@ -224,6 +224,27 @@ def play_melody():
     prob = gen_melody_array(cur_scale)
     display prob
     play_melody_auto(0, cur_bass, -1, prob, newTrack)
+    
+def find_harmony(int k):
+    counter = 0
+    for i from k to 11:
+        if scale[i] == 1:
+            counter++
+        if counter == 2:
+            return i
+    for j from 0 to k:
+        if scale[j] == 1:
+            counter++
+        if counter == 2:
+            return i
+
+def create_harmony(Track melody):
+    n_track = []
+    for i from 0 to len(melody):
+        n_track.append([])
+        for j from 0 to len(melody[i]):
+            n_track[i].append(find_harmony(melody[i][j]))
+    return n_track
 
 def main():
     #random.seed(time_get())
