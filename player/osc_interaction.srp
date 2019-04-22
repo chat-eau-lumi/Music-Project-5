@@ -5,7 +5,7 @@ require "prefs"
 require "mididevice"
 require "slider"
 require "dataStruct"
-
+require "gen_fn"
 
 allTracks = []
 
@@ -38,8 +38,8 @@ def initializeOSC()
 	midi_devices = Midi_devices(prefs)
 
 	o2_initialize("llo1", false)
-	o2_clock_set()
-	sched_o2_enabled = true
+	//o2_clock_set()
+	//sched_o2_enabled = true
 
 	//Create an OSC port, redirect OSC messages to O2 service
 	//Port number: 8347
@@ -48,7 +48,7 @@ def initializeOSC()
 	//Create O2 service, add handlers
 	o2_service_new("melody")
 	installHandler()
-	sched_init()
+	//sched_init()
 
 def installHandler()
  	print "Listening for all OSC messages to port 8050"
@@ -66,28 +66,31 @@ def generic(timestamp, address, types, rest parameters):
 
 
 def makeTrack(timestamp,address,types,rest parameters):
-	display "makeTrack", timestamp, address, types, parameters
+	#display "makeTrack", timestamp, address, types, parameters
 	if (address == "/melody/hp/rhythm")
 		allTracks.append(track([], 50, "rhythm"))
+		allTracks[len(allTracks)-1].setStatus(0)
+		#display len(allTracks)
 	elif (address == "/melody/hp/melody")
 		allTracks.append(track([],50, "melody"))
+		allTracks[len(allTracks)-1].setStatus(0)
 	elif (address == "/melody/hp/harmony")
 		allTracks.append(track([],50,"harmony"))
+		allTracks[len(allTracks)-1].setStatus(0)
 	elif (find(address,"style")!=-1)
 		style = subseq(style,-1,len(address))
 	elif (address=="/melody/hp/Volume")
-		display("v")
 		for i =0 to len(allTracks)
 			allTracks[i].changeVolFactor(parameters[0][0])
 
 def trackEdit(timestamp,address,types,rest parameters):
-	display "trackEdit", timestamp, address, types, parameters
+	#display "trackEdit", timestamp, address, types, parameters
 	if (find(address,"setTrack")!=-1)
 		if (parameters[0]==[1])
 			currTrackP1 = int(subseq(address,-3,-2))
 			currTrackP2= int(subseq(address,-1,len(address)))
 			currentTrack=(currTrackP2-1)*4+(currTrackP1-1)
-			display (currentTrack)
+			#display (currentTrack)
 	if (address == "/melody/te/muteButton")
 		if len(allTracks)>currentTrack
 			if parameters[0]==[1]
@@ -148,8 +151,8 @@ def calcBeats(typeTrack):
 		for i=1 to (len(genRhythm)):
 			display i
 			//newRealRhythm.append(genRhythm[i]-genRhythm[i-1])
-			fullVal=(tempo/60)*(genRhythm[i]-genRhythm[i-1])
-			((tempo/60)*(genRhythm[i]-genRhythm[i-1]))
+			fullVal=(tempo)*(genRhythm[i]-genRhythm[i-1])
+			((tempo)*(genRhythm[i]-genRhythm[i-1]))
 			beat = fullVal-int(fullVal)
 			remain =int(fullVal)
 			if beat<.375 
@@ -206,7 +209,7 @@ def resetMelody()
 	melTrackMotif=[]
 
 def insertMelody(timestamp,address,types,rest parameters):
-	display "OSC", timestamp, address, types, parameters
+	#display "OSC", timestamp, address, types, parameters
 	if (address == "/melody/mc/record") 
 		if parameters[0]==[1]
 			resetMelody()
@@ -253,7 +256,7 @@ def insertMelody(timestamp,address,types,rest parameters):
 		instrMel=getMelodyInstrument(int(p1),int(p2))
 
 def insertRhythm(timestamp,address,types,rest parameters):
-	display "rhythm", timestamp, address, types, parameters
+	#display "rhythm", timestamp, address, types, parameters
 	if (address == "/melody/rm/pushPad")
 		sched_cause(0,midi_out,'program',len(allTracks),trackInstr)
 		sched_cause(0,midi_out,'note_on',len(allTracks),60,60)
@@ -266,7 +269,7 @@ def insertRhythm(timestamp,address,types,rest parameters):
 			recording = true 
 		else 
 			genRhythm.append(time_get())
-			display len(genRhythm)
+			#display len(genRhythm)
 			calcBeats(0)
 			generateNoteList(0)
 			recording = false
@@ -283,9 +286,25 @@ def insertRhythm(timestamp,address,types,rest parameters):
 		p1 = subseq(address,-3,-2)
 		trackInstr=getRhythmInstrument(int(p1),int(p2))
 		
+def processScale(k)
+	#display("HI")
+	for i=0 to len(allTracks)
+		allTracks[i].changeKey(k)
+
+def playAllTracks()
+	display(len(allTracks))
+	for i=0 to len(allTracks):
+		if (allTracks[i].getStatus()==0)
+			if (allTracks[i].getArray()==[])
+				allTracks[i].setStatus(1)
+				if (allTracks[i].getTrack()=="rhythm")
+					play_percussion_auto(0, "tango", allTracks[i])
+				else
+					play_melody_auto(0, cur_bass, -1, gen_melody_array(cur_scale), allTracks[i])
 
 
 def playBack(tr,v)
+	sched_select(vtsched)
 	if len(allTracks)>tr
 		notesList = allTracks[tr].getArray()
 		for i=0 to len (notesList)
@@ -293,11 +312,15 @@ def playBack(tr,v)
 		if (v == 0) 
 			sched_cause(0,midi_out,'program',tr,allTracks[tr].getInstrument())
 		sched_cause(0,midi_out,'note_on',tr,notesList[v][0].note_to_pitch(),notesList[v][0].getVolume())
-		sched_cause(notesList[v][0].getDuration()*(60/tempo)-.1,midi_out,'note_on',tr,notesList[v][0].note_to_pitch(),0)
+		sched_cause(notesList[v][0].getDuration()-.1,midi_out,'note_on',tr,notesList[v][0].note_to_pitch(),0)
 		if (v<len(notesList)-1)
-			sched_cause(notesList[v][0].getDuration()*(60/tempo),nil,'playBack',tr,v+1)
+			sched_cause(notesList[v][0].getDuration(),nil,'playBack',tr,v+1)
 		else
 			playBack(tr,0)
+
+def setTempo(t)
+	display(tempo)
+	tempo=t
 
 
 

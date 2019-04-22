@@ -1,0 +1,52 @@
+debug.srp created srp.log for error report...
+runtime exception handler called
+exception is: [31;49mundefined method - note_on[39;49m
+frame variables: {}
+frame pc: -1
+frame method: <callin_method>
+frame class: nil
+
+Debugger invoked.
+-----------------------------------------------------
+Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
+-----------------------------------------------------
+Method [32;49msched_poll[39;49m in class [34;49mnil[39;49m, char 7354 in file 
+    /Users/lisalo/serpent/lib/sched.srp
+Frame variables: {time: 1448.76, period: nil}
+ 169:     rtsched.poll(time)
+                      ^
+-----------------------------------------------------
+Method [32;49mpoll[39;49m in class [34;49mScheduler[39;49m, char 12401 in file 
+    /Users/lisalo/serpent/lib/sched.srp
+Frame variables: {when: 1448.76, event: [1448.76, <obj@0x10b068500>, 'activate', []], target: <obj@0x10b068500>, message: 'activate', parms: []}
+ 304:             general_apply(target, message, parms)
+                               ^
+-----------------------------------------------------
+Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 28059 in file 
+    /Users/lisalo/serpent/lib/sched.srp
+Frame variables: {target: <obj@0x10b068500>, message: 'activate', parms: []}
+ 683:         sendapply(target, message, parms)
+                                               ^
+-----------------------------------------------------
+Method [32;49mactivate[39;49m in class [34;49mVscheduler[39;49m, char 20825 in file 
+    /Users/lisalo/serpent/lib/sched.srp
+Frame variables: {event: [3436, nil, 'note_on', [0, 60, 60]], target: nil, message: 'note_on', parms: [0, 60, 60]}
+ 519:             general_apply(target, message, parms)
+                               ^
+-----------------------------------------------------
+Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 28098 in file 
+    /Users/lisalo/serpent/lib/sched.srp
+Frame variables: {target: nil, message: 'note_on', parms: [0, 60, 60]}
+ 685:         apply(message, parms)
+                                   ^
+-----------------------------------------------------
+Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
+[31;49mundefined method - note_on[39;49m
+1> ? - stack trace
+<id> - print variable value
+* - print all variables
++ - up one level (to caller)
+- - down one level (to callee)
+=<expr> - evaluate expression
+! - exit
+> - resume execution

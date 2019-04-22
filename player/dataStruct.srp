@@ -33,11 +33,11 @@ class note:
         staccato = false
         volume = vol
         sduration = dur
-        pitchC = pit 
+        pitchC = pit - k
         volFactor=1 
 
     def note_to_pitch():
-        return pitchC
+        return pitchC+key
     
     def staccato_on():
         staccato = true
@@ -59,6 +59,9 @@ class note:
     
     def setVolume(newVol)
         volFactor=newVol
+    
+    def setKey(k)
+        key=k
 
 //creates a note identical to orig but with a new pitch
     def new_pitch_note(pitch):
@@ -90,11 +93,13 @@ class track:
     var trackVolFactor
     var newRatio
     var cursor
+    var active
 
     // takes in an array of notes, if have no motif, can key in empty
     // array which means we need to generate new motif
     def init(notes, vari, typ):
         cursor=0
+        active = 1
         array = notes //actually inputting array functionality TBD
         variability = vari
         type = typ
@@ -133,6 +138,15 @@ class track:
 
     def getArray():
         return array
+
+    def returnNoteToPlay()
+        return array[cursor]
+
+    def getStatus()
+        return active
+
+    def setStatus(i)
+        active=i
     
     def changeVolFactor(newVol)
         trackVolFactor=newVol
@@ -140,3 +154,11 @@ class track:
         for x=0 to (curLen):
             curNote = array[x][0]
             curNote.setVolume(newRatio*trackVolFactor)
+
+    def changeKey(k)
+        curLen = len(array)
+        for x=0 to (curLen):
+            for y = 0 to len(array[x])
+                curNote = array[x][y]
+                curNote.setKey(k)
+
