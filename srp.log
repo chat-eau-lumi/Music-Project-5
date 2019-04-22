@@ -1,6 +1,10 @@
 debug.srp created srp.log for error report...
 runtime exception handler called
+<<<<<<< HEAD
 exception is: [31;49mglobal variable is unbound - random_seed[39;49m
+=======
+exception is: [31;49mglobal variable is unbound - newRhythm[39;49m
+>>>>>>> 94679d66c7330fa2f01307edbd5000620739ad92
 frame variables: {}
 frame pc: -1
 frame method: <callin_method>
@@ -10,10 +14,18 @@ Debugger invoked.
 -----------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 -----------------------------------------------------
+<<<<<<< HEAD
 Method [32;49m<immediate command 0>[39;49m in class [34;49mnil[39;49m, char 6966 in file 
     /Users/sooyoung/serpent/p5/Music-Project-5/gen_fn.srp
  233: main()
           ^
+=======
+Method [32;49msched_poll[39;49m in class [34;49mnil[39;49m, char 7453 in file 
+    /Users/lisalo/serpent/lib/sched.srp
+Frame variables: {time: 8.362, period: nil}
+ 173:         o2_poll()
+                     ^
+>>>>>>> 94679d66c7330fa2f01307edbd5000620739ad92
 -----------------------------------------------------
 Method [32;49mmain[39;49m in class [34;49mnil[39;49m, char 6468 in file 
     /Users/sooyoung/serpent/p5/Music-Project-5/gen_fn.srp
@@ -21,5 +33,29 @@ Method [32;49mmain[39;49m in class [34;49mnil[39;49m, char 6468 in file
           ^
 -----------------------------------------------------
 Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
+<<<<<<< HEAD
 [31;49mglobal variable is unbound - random_seed[39;49m
 1> Exiting ...
+=======
+-----------------------------------------------------
+Method [32;49mgeneric[39;49m in class [34;49mnil[39;49m, char 1248 in file 
+    /Users/lisalo/serpent/Music-Project-5/osc_interaction.srp
+Frame variables: {timestamp: 0, address: "/melody/mc/record", types: "f", parameters: [0]}
+  65:     	insertMelody(timestamp, address, types,  parameters)
+                       ^
+-----------------------------------------------------
+Method [32;49minsertMelody[39;49m in class [34;49mnil[39;49m, char 5799 in file 
+    /Users/lisalo/serpent/Music-Project-5/osc_interaction.srp
+Frame variables: {timestamp: 0, address: "/melody/mc/record", types: "f", parameters: [[0]]}
+ 233: 			calcBeats(1)
+                  ^
+-----------------------------------------------------
+Method [32;49mcalcBeats[39;49m in class [34;49mnil[39;49m, char 5008 in file 
+    /Users/lisalo/serpent/Music-Project-5/osc_interaction.srp
+Frame variables: {typeTrack: 1, i: 1}
+ 206: 			newRhythm.append(beat+remain)
+         ^
+-----------------------------------------------------
+Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
+[31;49mglobal variable is unbound - newRhythm[39;49m
+>>>>>>> 94679d66c7330fa2f01307edbd5000620739ad92
