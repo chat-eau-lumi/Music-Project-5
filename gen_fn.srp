@@ -21,13 +21,13 @@
     #   reliable without very difficult analysis. So, instead of
     #   x >= y, we write x + EPSILON > y
 
-def play_percussion(int index, str prev_style): 
+def play_percussion(index, prev_style): 
     #default patterns
     pattern_jazz = [0.5, 1, 0.5, 0.2, 0.8]
     pattern_tango = [1.5, 1.5, 1, 1.5, 1.5, 1]
     pattern_waltz = [1, 1, 1]
     pattern_rhumba = [0.5, 0.25, 0, 0.25, 0, 0.5]
-    pattern_tap = [0.5, 0.5, 0.5, 0.5]]
+    pattern_tap = [0.5, 0.5, 0.5, 0.5]
     default_patterns = [pattern_jazz, pattern_tango, pattern_waltz, 
                         pattern_rhumba, pattern_tap]
 
@@ -37,13 +37,13 @@ def play_percussion(int index, str prev_style):
         #choose a pattern using user input
         if (cur_style == 'jazz'):
             perc_pattern = pattern_jazz
-        else if (cur_style == 'tango'):
+        elif (cur_style == 'tango'):
             perc_pattern = pattern_tango
-        else if (cur_style == 'waltz'):
+        elif (cur_style == 'waltz'):
             perc_pattern = pattern_waltz
-        else if (cur_style == 'rhumba'):
+        elif (cur_style == 'rhumba'):
             perc_pattern = pattern_rhumba
-        else if (cur_style == 'tap'):
+        elif (cur_style == 'tap'):
             perc_pattern = pattern_tap
         else:
             pattern = irandom(4)
@@ -61,10 +61,12 @@ def play_percussion(int index, str prev_style):
     #play percussion
     midi_out.note_on(hex(instr), 60, vel(80))
 
+    index = index + 1
+
     #schedule using current duration
-    sched_cause(perc_pattern[index], nil, 'play_percussion', index++, prev_style)
+    sched_cause(perc_pattern[index], nil, 'play_percussion', index, prev_style)
         
-def gen_melody_array(bool[] cur_scale):
+def gen_melody_array(cur_scale):
     prob = []
     note_prob = []
 
@@ -78,7 +80,7 @@ def gen_melody_array(bool[] cur_scale):
 
     return prob
 
-def gen_note_prob(int note, bool[] cur_scale):
+def gen_note_prob(note, cur_scale):
     num_notes = len(cur_scale)
     prob_arr = []
     
@@ -89,57 +91,73 @@ def gen_note_prob(int note, bool[] cur_scale):
                 prob_arr.append(irandom(5))
             else:
                 distance = abs(note - cur_scale[i])-1
-                prob_arr.append(irandom(10 - distance))
+                prob_arr.append(distance + irandom(10 - distance))
         else:
             prob_arr.append(0)
+    return prob_arr
 
-     return prob_arr
-
-def get_next_note(int[] prob):
+def get_next_note(prob, prev_note):
 #return note with max prob for now
+    next_note = 0
+    max = prob[0]
 
-    for i in range 0 to len(prob):
-        if prob[i] == max(prob):
-            return i
+    for i in range(1, len(prob)):
+        if prob[i] > max:
+            max = prob[i]
+            next_note = i
+    if cur_scale[i] == prev_note:
+        prob = prob.remove(max)        
+        next_note = get_next_note(prob, prev_note)
 
-def play_melody_auto(int index, int note, int prev_note, int[][] prob, 
-                int instr, int[] dur):
+    return next_note
+
+def play_melody_auto(index, note, prev_note, prob, instr, dur):
     if (prev_note != 0):
         midi_out.note_on(hex(instr), prev_note, 0)
 
     index = index % len(cur_scale)
 
-    int[] note_prob = prob[note]
-    next_note = get_next_note(note_prob)
+    note_prob = prob[note]
+    next = get_next_note(note_prob, prev_note)
 
     midi_out.note_on(hex(instr), note, velocity)
-    sched_cause(dur[index], nil, 'play_melody', index++, next_note, note, prob, instr, dur) 
+    index = index + 1
 
-def play_melody_user(int index, int[][] arr):
-    int instr = track.get_instrument()
+    sched_cause(dur[index], nil, 'play_melody', index, cur_scale[next], note, prob, instr, dur) 
+
+def play_melody_user(index, arr):
+    instr = track.get_instrument()
     cur_index = index
 
     if (index > len(arr)):
         cur_index = index % len(arr)
 
-    (note, duration, volume) = arr[cur_index][0]
+    cur_arr = arr[cur_index][0]
+    note = cur_arr[0]
+    duration = cur_arr[1]
+    volume = cur_arr[2]
 
     if (index > 0):
         if (cur_index == 0):
-            (prev_note, prev_dur, prev_vol) = arr[len(arr)-1][0]
+            prev_arr = arr[len(arr)-1][0]
+            prev_note = prev_arr[0]
+
             midi_out.note_on(hex(instr), prev_note, 0)
         else:
-            (prev_note, prev_dur, prev_vol) = arr[cur_index-1]
+            prev_arr = arr[cur_index-1]
+            prev_note = prev_arr[0]
             midi_out.note_on(hex(instr), prev_note, 0)
 
     midi_out.note_on(hex(instr), note, volume)
-    sched_cause(duration, nil, 'play_melody_user', index++, track.array)
+    index = index + 1
+    
+    sched_cause(duration, nil, 'play_melody_user', index, track.array)
 
 def play_melody():
     if track.array != []:
         play_melody_user(0, track.array)
     else:
-        int[][] prob = gen_melody_array(cur_scale)
+        prob = gen_melody_array(cur_scale)
         play_melody_auto(0, cur_bass, 0, prob, track.get_instrument(), dur)
 
 
