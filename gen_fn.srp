@@ -140,7 +140,8 @@ def get_next_note(prob, prev_note):
 
     return next_note
 
-def play_melody_auto(index, note, prev_note, prob, curTrack, dur):
+def play_melody_auto(index, note, prev_note, prob, curTrack):
+    sched_select(vtsched)
 
     display "playing"
     #instr = 96
@@ -164,9 +165,10 @@ def play_melody_auto(index, note, prev_note, prob, curTrack, dur):
     display "done playing"
     dur = irandom(10)
     #if dur > 2:
-    dur = dur//6000
+    dur = dur/7
+    display dur
 
-    sched_cause(dur, nil, 'play_melody_auto', index, next, note, prob, curTrack, dur) 
+    sched_cause(dur, nil, 'play_melody_auto', index, next, note, prob, curTrack) 
 
 def play_melody_user(index, curTrack):
 
@@ -214,7 +216,7 @@ def play_melody():
     newTrack = track([], 1, "melody")
     prob = gen_melody_array(cur_scale)
     display prob
-    play_melody_auto(0, cur_bass, -1, prob, newTrack, 0.1)
+    play_melody_auto(0, cur_bass, -1, prob, newTrack)
 
 def main():
     sched_init(2)
