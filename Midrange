@@ -55,8 +55,8 @@ fun create_p_track (int den, bool stac, int key, int oct, vol) =
         r_array = []
         for k from 0 to len:
             n_array.append([Note(oct * 12 + get_c_note(inver[0]) + inv_oct_weights[rand][0], key, vol, curr_style[k]), 
-                              Note(oct * 12 + get_c_note(inver[1]) + inv_oct_weights[rand][1], key, vol, curr_style[k]),
-                              Note(oct * 12 + get_c_note(inver[2]) + inv_oct_weights[rand][2], key, vol, curr_style[k])])
+                            Note(oct * 12 + get_c_note(inver[1]) + inv_oct_weights[rand][1], key, vol, curr_style[k]),
+                            Note(oct * 12 + get_c_note(inver[2]) + inv_oct_weights[rand][2], key, vol, curr_style[k])])
         p = Track(r_array, 0, "chordal") 
         return p
         

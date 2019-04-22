@@ -260,12 +260,13 @@ def insertMelody(timestamp,address,types,rest parameters):
 
 
 def playBack(tr,v)
-	print(allTracks[0].getArray())
 	notesList = allTracks[tr].getArray()
+	for i=0 to len (notesList)
+		notesList[i][0].note_to_pitch()
 	sched_cause(0,midi_out,'note_on',0,notesList[v][0].note_to_pitch(),notesList[v][0].getVolume())
-	sched_cause(notesList[v].getDuration()*(60/tempo)-.1,midi_out,'note_on',0,notesList[v].note_to_pitch(),0)
+	sched_cause(notesList[v][0].getDuration()*(60/tempo)-.1,midi_out,'note_on',0,notesList[v][0].note_to_pitch(),0)
 	if (v<len(notesList)-1)
-		sched_cause(notesList[v].getDuration()*(60/tempo),nil,'playBack',tr,v+1)
+		sched_cause(notesList[v][0].getDuration()*(60/tempo),nil,'playBack',tr,v+1)
 
 
 
