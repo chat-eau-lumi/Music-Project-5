@@ -1,4 +1,8 @@
-require dataStruct.srp
+require "dataStruct"
+require "sched"
+require "prefs"
+require "midi-io"
+require "mididevice"
 
 # gen_fn.srp - fns generating percussion and melody
 #
@@ -23,7 +27,6 @@ require dataStruct.srp
     #   reliable without very difficult analysis. So, instead of
     #   x >= y, we write x + EPSILON > y
 
-track = track()
 
 #default patterns
 pattern_jazz = [0.5, 1, 0.5, 0.2, 0.8]
@@ -34,27 +37,33 @@ pattern_tap = [0.5, 0.5, 0.5, 0.5]
 default_patterns = [pattern_jazz, pattern_tango, pattern_waltz, 
                     pattern_rhumba, pattern_tap]
 
-def play_percussion(index, prev_style):
+# need to write get prob
+cur_scale = [t, nil, t, nil, t, t, nil, t, nil, t, nil, t]
+cur_bass = 0
+cur_style = ""
 
-    instr = track.getInstrument()
+def play_percussion(index, prev_style, type): 
 
-    if (user_input != ""):
+    newTrack = track([], 1, type)
+    instr = curTrack.getInstrument()
+
+    #if (user_input != ""):
         #choose a pattern using user input
-        if (cur_style == 'jazz'):
-            perc_pattern = pattern_jazz
-        elif (cur_style == 'tango'):
-            perc_pattern = pattern_tango
-        elif (cur_style == 'waltz'):
-            perc_pattern = pattern_waltz
-        elif (cur_style == 'rhumba'):
-            perc_pattern = pattern_rhumba
-        elif (cur_style == 'tap'):
-            perc_pattern = pattern_tap
-        else:
-            pattern = irandom(4)
-            perc_pattern = default_patterns[pattern]
+    if (cur_style == 'jazz'):
+        perc_pattern = pattern_jazz
+    elif (cur_style == 'tango'):
+        perc_pattern = pattern_tango
+    elif (cur_style == 'waltz'):
+        perc_pattern = pattern_waltz
+    elif (cur_style == 'rhumba'):
+        perc_pattern = pattern_rhumba
+    elif (cur_style == 'tap'):
+        perc_pattern = pattern_tap
     else:
-        perc_pattern = user_input
+        pattern = irandom(4)
+        perc_pattern = default_patterns[pattern]
+    #else:
+    #    perc_pattern = user_input
 
     #reset duration to be played only if style changed or out_of_range
     if (prev_style != cur_style):
@@ -64,7 +73,7 @@ def play_percussion(index, prev_style):
         cur_index % len(perc_pattern)
 
     #play percussion
-    midi_out.note_on(hex(instr), 60, vel(80))
+    midi_out.note_on(instr, 60, vel(80))
 
     index = index + 1
 
@@ -76,12 +85,12 @@ def gen_melody_array(cur_scale):
     note_prob = []
 
     #gnerate array of probabilities of moving from one note to another
-    for note in range(0, len(cur_scale)):
-        if cur_scale[i] == 1:
-            note_prob = get_prob(i, scale)
+    for note=0 to 12:
+        if cur_scale[note] == t:
+            note_prob = gen_note_prob(note, cur_scale)
             prob.append(note_prob)
         else:
-            prob.append([])
+            prob.append(0)
 
     return prob
 
@@ -90,13 +99,13 @@ def gen_note_prob(note, cur_scale):
     prob_arr = []
     
     #generate probability by considering distance between two notes
-    for i in range(0, num_notes):
-        if (cur_scale[i] == 1):
+    for i=0 to num_notes:
+        if (cur_scale[i] == 't'):
             if (i == note):
                 prob_arr.append(irandom(5))
             else:
-                distance = abs(note - cur_scale[i])-1
-                prob_arr.append(distance + irandom(10 - distance))
+                distance = abs(note - i)-1
+                prob_arr.append(irandom(distance))
         else:
             prob_arr.append(0)
     return prob_arr
@@ -104,65 +113,120 @@ def gen_note_prob(note, cur_scale):
 def get_next_note(prob, prev_note):
 #return note with max prob for now
     next_note = 0
+    display prob
     max = prob[0]
 
-    for i in range(1, len(prob)):
-        if prob[i] > max:
+    display "in next"
+    for i=1 to len(prob)
+        if prob[i] >= max:
             max = prob[i]
             next_note = i
-    if cur_scale[i] == prev_note:
-        prob = prob.remove(max)        
-        next_note = get_next_note(prob, prev_note)
+   
+    if prev_note > 1: 
+        if prob[prev_note] <= 0:
+            new_prob = irandom(abs(next_note-prev_note))
+            if new_prob == 0:
+                new_prob = abs(next_note-prev_note)
+            prob[prev_note] = new_prob
+        else:
+            prob[prev_note] = prob[prev_note] + 1
+    
+    prob[next_note] = prob[next_note] - 2
+     
+     #if next_note == prev_note:
+     #   curMax = prob.index(max)
+         #prob[curMax] = 0     
+         #next_note = get_next_note(prob, prev_note)
 
     return next_note
 
-def play_melody_auto(index, note, prev_note, prob, instr, dur):
-    if (prev_note != 0):
-        midi_out.note_on(hex(instr), prev_note, 0)
+def play_melody_auto(index, note, prev_note, prob, curTrack, dur):
+
+    display "playing"
+    #instr = 96
+    instr = curTrack.getInstrument()
+    
+    if (prev_note != -1):
+        midi_out.note_on(instr, prev_note, 0)
 
     index = index % len(cur_scale)
 
+    display note
     note_prob = prob[note]
     next = get_next_note(note_prob, prev_note)
+    display "done next"
 
-    midi_out.note_on(hex(instr), note, vel(100))
+    display instr
+    midi_out.note_on(instr, 60 + note, 100)
     index = index + 1
+    display next
 
-    sched_cause(dur[index], nil, 'play_melody', index, cur_scale[next], note, prob, instr, dur) 
+    display "done playing"
+    dur = irandom(10)
+    if dur > 2:
+        dur = dur//10
 
-def play_melody_user(index, arr):
-    instr = track.getInstrument()
+    sched_cause(dur, nil, 'play_melody_auto', index, next, note, prob, curTrack, dur) 
+
+def play_melody_user(index, curTrack):
+
+    arr = curTrack.array
+    instr = curTrack.getInstrument()
     cur_index = index
 
     if (index > len(arr)):
         cur_index = index % len(arr)
 
     cur_arr = arr[cur_index][0]
-    note = cur_arr[0]
-    duration = cur_arr[1]
-    volume = cur_arr[2]
+    note = cur_arr.pitch 
+    duration = cur_arr.sduration
+    volume = cur_arr.volume
 
     if (index > 0):
         if (cur_index == 0):
             prev_arr = arr[len(arr)-1][0]
-            prev_note = prev_arr[0]
+            lenPrev = len(prev_arr)
+            
+            # turn off all notes in prev array
+            for i=0 to (lenPrev):
+                curNote = prev_arr[i]
+                prevPitch = curNote.pitch
+                midi_out.note_on(instr, prevPitch,0)
 
-            midi_out.note_on(hex(instr), prev_note, 0)
         else:
             prev_arr = arr[cur_index-1]
-            prev_note = prev_arr[0]
-            midi_out.note_on(hex(instr), prev_note, 0)
+            lenPrev = len(prev_arr)
+            for i=0 to (lenPrev):
+                curNote = prev_arr[i]
+                prevPitch = curNote.pitch
+                midi_out.note_on(instr, prevPitch,0)
 
-    midi_out.note_on(hex(instr), note, volume)
+    midi_out.note_on(instr, note, volume)
     index = index + 1
     
     sched_cause(duration, nil, 'play_melody_user', index, track.array)
 
 def play_melody():
-    if track.array != []:
-        play_melody_user(0, track.array)
-    else:
-        prob = gen_melody_array(cur_scale)
-        play_melody_auto(0, cur_bass, 0, prob, track.getInstrument(), dur)
+    #if track.array != []:
+     #   newTrack = track([], 1, "melody")
+      #  play_melody_user(0, newTrack)
+    #else:
+    newTrack = track([], 1, "melody")
+    prob = gen_melody_array(cur_scale)
+    display prob
+    play_melody_auto(0, cur_bass, -1, prob, newTrack, 1)
 
+def main():
+    sched_init(2)
+    prefs = Prefs("./prefs.txt")
+    midiDevices = Midi_devices(prefs, open_later = true)
+    success = midiDevices.open_midi(latency = 10, device = 'midi_out_device')
+    if not success
+        print "PLEASE SELECT A VALID OUTPUT DEVICE AND RESTART THIS PROGRAM"
+    else
+        sched_select(vtsched)
+        sched_set_period(0.5)
+        sched_cause(real_delay(1), nil, 'play_melody')
+
+main()
 
