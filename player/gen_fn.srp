@@ -6,6 +6,7 @@ require "mididevice"
 require "wxserpent"
 require "slider"
 require "debug"
+#require "playerdemo"
 
 
 # gen_fn.srp - fns generating percussion and melody
@@ -41,10 +42,14 @@ pattern_tap = [0.5, 0.5, 0.5, 0.5]
 default_patterns = [pattern_jazz, pattern_tango, pattern_waltz, 
                     pattern_rhumba, pattern_tap]
 
+#durations
+durations = [0.125, 0.25, 0.5, 1, 2, 3, 4]
+
 # need to write get prob
 cur_scale = [t, nil, t, nil, t, t, nil, t, nil, t, nil, t]
 cur_bass = 0
 cur_style = ""
+cur_beats_per_measure = 4
 
 def play_percussion():
     newTrack = track([], 1, "perc")
@@ -131,7 +136,6 @@ def get_next_note(prob, prev_note):
     display prob
     max = prob[0]
 
-    //display "in next"
     for i=1 to len(prob)
         if prob[i] >= max:
             max = prob[i]
@@ -148,49 +152,54 @@ def get_next_note(prob, prev_note):
     
     prob[next_note] = prob[next_note] - 2
      
-     #if next_note == prev_note:
-     #   curMax = prob.index(max)
-         #prob[curMax] = 0     
-         #next_note = get_next_note(prob, prev_note)
-
     return next_note
 
-def play_melody_auto(index, note, prev_note, prob, curTrack):
-    sched_select(vtsched)
+def play_melody_auto(prob, curTrack):
+    #sched_select(vtsched)
 
-    //display "playing"
+    #display "playing"
     #instr = 96
-    instr = curTrack.getInstrument()
+    #instr = curTrack.getInstrument()
    
-    #for i from 0 to 5:
-        #for j from 0 to 8:
-            #curTrack[i][j] = note
-    #return curTrack
+    #if (prev_note != -1):
+    #    midi_out.note_on(instr, prev_note, 0)
 
-    if (prev_note != -1):
-        midi_out.note_on(instr, prev_note, 0)
+    #index = index % len(cur_scale)
+   
+    total_time = cur_beats_per_measure
 
-    index = index % len(cur_scale)
+    new_arr = curTrack.array
+    new_arr.append([])
+    cur_measure = new_arr[0]
+    #display cur_measure
+    dur = durations[irandom(6)]
+    cur_note = note(cur_bass, 0, 100, dur)
+    cur_measure.append(cur_note)
 
-    //display note
-    note_prob = prob[note]
-    next = get_next_note(note_prob, prev_note)
-    //display "done next"
+    #cur_note.pitchC = cur_bass + note
+    #cur_note.sDuration = durations[irandom(6)]
+    #cur_time = cur_note.sDuration 
+    #count = 1
 
-    display instr
-    midi_out.note_on(instr, 60 + note, 100)
-    index = index + 1
-    display next
+    #for i=0 to 1:
+    #    while (cur_time < total_time):
+    #        cur_note = new_arr[i][count]
+    #        if (count == 0):
+    #            last_note = len(new_arr[i-1])-1
+    #            note = get_next_note(prob, new_arr[i-1][last_note])
+    #        else:
+    #            note = get_next_note(prob, new_arr[i][count-1]
+    #        
+    #        cur_note.pitchC = cur_bass + note
+    #        cur_note.sDuration = getDur(cur_time, total_time)
+    #        cur_time = cur_time + cur_note.sDuration
+    #        count = count + 1
+        
+    #    cur_time = 0
+    #    count = 0
 
-    //display "done playing"
-    dur = irandom(10)
-    #dur = 1
-    #if dur > 2:
-    dur = dur/7
-    display dur
-
-    sched_cause(dur, nil, 'play_melody_auto', index, next, note, prob, curTrack) 
-
+    return curTrack
+    
 def play_melody_user(index, curTrack):
 
     arr = curTrack.array
@@ -230,28 +239,25 @@ def play_melody_user(index, curTrack):
     sched_cause(duration, nil, 'play_melody_user', index, track.array)
 
 def play_melody():
-    #if track.array != []:
-     #   newTrack = track([], 1, "melody")
-      #  play_melody_user(0, newTrack)
-    #else:
     newTrack = track([], 1, "melody")
     prob = gen_melody_array(cur_scale)
+    display newTrack.array
     display prob
-    play_melody_auto(0, cur_bass, -1, prob, newTrack)
+    play_melody_auto(prob, newTrack)
 
-def main():
+#def main():
     #random.seed(time_get())
-    sched_init(2)
-    prefs = Prefs("./prefs.txt")
-    midiDevices = Midi_devices(prefs, open_later = true)
-    success = midiDevices.open_midi(latency = 10, device = 'midi_out_device')
-    if not success
-        print "PLEASE SELECT A VALID OUTPUT DEVICE AND RESTART THIS PROGRAM"
-    else
-        sched_select(vtsched)
-        sched_set_period(0.5)
+    #sched_init(2)
+    #prefs = Prefs("./prefs.txt")
+    #midiDevices = Midi_devices(prefs, open_later = true)
+    #success = midiDevices.open_midi(latency = 10, device = 'midi_out_device')
+    #if not success
+    #    print "PLEASE SELECT A VALID OUTPUT DEVICE AND RESTART THIS PROGRAM"
+    #else
+        #sched_select(vtsched)
+        #sched_set_period(0.5)
         #sched_cause(real_delay(1), nil, 'play_melody')
-        sched_cause(real_delay(1), nil, 'play_percussion')
+        #sched_cause(real_delay(1), nil, 'play_percussion')
 
 #main()
-
+play_melody()
