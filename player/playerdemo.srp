@@ -66,10 +66,12 @@ def play_a_measure()
     #display "play_a_measure", cur_beats_per_measure, cur_bps
     #display "    ", cur_scale, cur_chord, cur_bass
     #display "HI play_measure_again"
-    k=returnKey(cur_scale)
-    processScale(k)
-    playAllTracks()
-    setTempo(cur_bps)
+    if cur_style == 'rock'
+        setTempo(cur_bps)
+        k=returnKey(cur_scale)
+        processAllTracks(k,cur_beats_per_measure)
+        playAllTracks()
+
 
 
 

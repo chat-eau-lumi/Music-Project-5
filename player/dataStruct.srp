@@ -21,6 +21,7 @@ class note:
     var staccato
     var sduration
     var pitchC
+    var noteEnd
     
     //a note's inherent volume
     var volume
@@ -35,6 +36,7 @@ class note:
         sduration = dur
         pitchC = pit - k
         volFactor=1 
+        noteEnd=dur-.05
 
     def note_to_pitch():
         return pitchC+key
@@ -45,24 +47,29 @@ class note:
     def staccato_off():
         staccato = false
 
-    def getDuration()
+    def getDuration():
         return sduration
 
-    def getVolume()
+    def getVolume():
         if volume*volFactor>127:
             return 127 
         else
             return int(volume*volFactor)
 
-    def getTrueVolume()
+    def getTrueVolume():
         return volume
+
+    def getNoteEnd():
+        return noteEnd
     
-    def setVolume(newVol)
+    def setVolume(newVol):
         volFactor=newVol
     
-    def setKey(k)
+    def setKey(k):
         key=k
 
+    def setNoteEnd(v):
+        noteEnd=v
 //creates a note identical to orig but with a new pitch
     def new_pitch_note(pitch):
         new_p = note(pitch, key, volume, sduration)
@@ -94,13 +101,21 @@ class track:
     var newRatio
     var cursor
     var active
+    var realBPM
+    var extra
+    var measures
+    var resetVal
+
 
     // takes in an array of notes, if have no motif, can key in empty
     // array which means we need to generate new motif
     def init(notes, vari, typ):
+        resetVal = -1
+        realBPM=4
         cursor=0
         active = 1
         array = notes //actually inputting array functionality TBD
+        measures = processArray()
         variability = vari
         type = typ
         trackVolFactor=1
@@ -111,12 +126,40 @@ class track:
         else:
             instrument = 0x35 #drum
 
-    def changeVol( newR):
-        newRatio=newR
-        curLen = len(array)
-        for x=0 to (curLen):
-            curNote = array[x][0]
-            curNote.setVolume(newRatio*trackVolFactor)
+  
+    #methods to get variables
+    def getTrack():
+        return type
+
+    def getInstrument():
+        return instrument
+
+    def getArray(change):
+        if (change==1)
+            if len(measures)!=0
+                if cursor>=len(measures)
+                    cursor=0
+                    resetVal=resetVal-1
+                ar=measures[cursor]
+                cursor=cursor+1
+                return ar
+        else
+            return measures[cursor]
+
+    def getPureArray():
+        return array
+
+    def getStatus():
+        return active
+
+    def getReset():
+        return resetVal
+
+
+
+    #methods to set variables
+    def setStatus(i):
+        active=i
 
     def changeInstrument( newInst):
         instrument = newInst
@@ -130,35 +173,66 @@ class track:
            curNote = array[x]
            curNote.octave = curOct
 
-    def getTrack():
-        return type
-
-    def getInstrument():
-        return instrument
-
-    def getArray():
-        return array
-
-    def returnNoteToPlay()
-        return array[cursor]
-
-    def getStatus()
-        return active
-
-    def setStatus(i)
-        active=i
-    
-    def changeVolFactor(newVol)
+    #overall volume
+    def changeVolFactor(newVol):
         trackVolFactor=newVol
+        processVolume()
+
+    #individual track volume
+    def changeVol(newR):
+        newRatio=newR
+        processVolume()
+
+    def setRealBPM(bp):
+        if realBPM != bp
+            realBPM =bp
+            processArray()
+    
+    def setArray(ar):
+        array=ar
+        processArray()
+        resetVal=irandom(5)
+
+
+
+    #methods to calculate and process
+    #makes array into measures
+    def processArray():
+        count = 0
+        singleMeasure=[]
+        measures=[]
+        for i=0 to len(array)
+            noteDur = array[i][0].getDuration()
+            if (noteDur+count)>realBPM
+                measures.append(singleMeasure)
+                singleMeasure=[]
+                count = noteDur
+                singleMeasure.append(array[i])
+            else
+                singleMeasure.append(array[i])
+                count= count + noteDur
+        if singleMeasure!=[]
+            extra = realBPM-count
+            measures.append(singleMeasure)
+        else
+            extra = 0 
+
+   
+    def processVolume():
         curLen = len(array)
         for x=0 to (curLen):
             curNote = array[x][0]
             curNote.setVolume(newRatio*trackVolFactor)
 
-    def changeKey(k)
+    def changeKey(k):
         curLen = len(array)
         for x=0 to (curLen):
             for y = 0 to len(array[x])
                 curNote = array[x][y]
                 curNote.setKey(k)
 
+   
+
+    
+
+    
