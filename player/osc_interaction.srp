@@ -26,7 +26,7 @@ instrMel=0
 melTrackMotif=[]
 melEndNote=[]
 
-volume=1
+volume=0
 
 
 
@@ -52,7 +52,7 @@ def initializeOSC():
 	//sched_init()
 
 def installHandler():
- 	print "Listening for all OSC messages to port 8050"
+ 	#print "Listening for all OSC messages to port 8050"
  	o2_method_new("/melody", nil, 'generic', false)
 
 def generic(timestamp, address, types, rest parameters):  
@@ -67,7 +67,7 @@ def generic(timestamp, address, types, rest parameters):
 
 
 def makeTrack(timestamp,address,types,rest parameters):
-	display "makeTrack", timestamp, address, types, parameters
+	#display "makeTrack", timestamp, address, types, parameters
 	if (address == "/melody/hp/rhythm")
 		allTracks.append(track([], 50, "rhythm"))
 		allTracks[len(allTracks)-1].setStatus(0)
@@ -85,7 +85,7 @@ def makeTrack(timestamp,address,types,rest parameters):
 			allTracks[i].changeVolFactor(parameters[0][0])
 
 def trackEdit(timestamp,address,types,rest parameters):
-	display "trackEdit", timestamp, address, types, parameters
+	#display "trackEdit", timestamp, address, types, parameters
 	if (find(address,"setTrack")!=-1)
 		if (parameters[0]==[1])
 			currTrackP1 = int(subseq(address,-3,-2))
@@ -121,7 +121,7 @@ def trackEdit(timestamp,address,types,rest parameters):
 				allTracks[currentTrack].changeInstrument(getMelodyInstrument(p1,p2))
 
 def insertMelody(timestamp,address,types,rest parameters):
-	display "OSC", timestamp, address, types, parameters
+	#display "OSC", timestamp, address, types, parameters
 	if (address == "/melody/mc/record") 
 		if parameters[0]==[1]
 			resetMelody()
@@ -145,6 +145,7 @@ def insertMelody(timestamp,address,types,rest parameters):
 			if (parameters[0]==1)
 				melRhythmRaw.append(time_get())
 				melNotes.append(0)
+				melEndNote.append(time_get())
 		else:
 			pitch = int(subseq(address,-2,len(address)))
 			octave= int(subseq(address,-6,-5))*12
@@ -229,12 +230,13 @@ def getMelodyInstrument(p1,p2):
 def snapBeat(fullVal):
 	beat = fullVal-int(fullVal)
 	remain =int(fullVal)
-	if beat<.375 
+	display(beat)
+	if remain>1 and beat<.125
+		beat = 1
+	elif beat<.375 
 		beat = .25
-	elif beat<.625
+	elif beat<.7
 		beat = .5
-	elif beat <.875
-		beat=.75
 	elif beat <1
 		beat=1
 	return beat+remain
@@ -242,9 +244,11 @@ def snapBeat(fullVal):
 def calcBeats(typeTrack):
 	if (typeTrack == 0)
 		for i=1 to (len(genRhythm)):
-			display i
+			#display i
 			//newRealRhythm.append(genRhythm[i]-genRhythm[i-1])
 			fullVal=(tempo)*(genRhythm[i]-genRhythm[i-1])
+			display (snapBeat(fullVal))
+			display tempo
 			newRealRhythm.append(snapBeat(fullVal))
 		genRhythm=[]
 	else
@@ -252,6 +256,8 @@ def calcBeats(typeTrack):
 			//melRhythm.append((tempo/60)*(melRhythmRaw[i]-melRhythmRaw[i-1]))
 			fullVal=(tempo)*(melRhythmRaw[i]-melRhythmRaw[i-1])
 			melRhythm.append(snapBeat(fullVal))
+			display (snapBeat(fullVal))
+			display tempo
 			noteDuration = (tempo)*(melEndNote[i-1]-melRhythmRaw[i-1])
 			melEndNote[i-1]=snapBeat(noteDuration)
 		melRhythmRaw=[]
@@ -267,6 +273,7 @@ def generateNoteList(typeTrack):
 				melTrackMotif.append([note(melNotes[i],0,0,melRhythm[i])])
 			else
 				melTrackMotif.append([note(melNotes[i],0,70,melRhythm[i])])
+				melTrackMotif[len(melTrackMotif)-1][0].setNoteEnd(melEndNote[i])
 
 def resetRhythm():
 	genRhythm=[]
@@ -290,15 +297,16 @@ def setTempo(t):
 
 
 		
-def processAllTracks(k,bpm):
+def processAllTracks(k,bpm,veloc):
 	#display("HI")
 	for i=0 to len(allTracks)
 		allTracks[i].setRealBPM(bpm)
 		allTracks[i].changeKey(k)
+	volume=veloc
 
 
 def playAllTracks():
-	display(len(allTracks))
+	#display(len(allTracks))
 	sched_select(vtsched)
 	for i = 0 to (len(allTracks))
 		//if (allTracks[i].getPureArray()==[] or allTracks[i].getReset()==-1):
@@ -312,9 +320,15 @@ def playTrack(tr,notesList,v,chan):
 	sched_select(vtsched)
 	if (v == 0) 
 		sched_cause(0,midi_out,'program',chan,tr.getInstrument())
-	//for i=0 to len(notesList[v])
-	sched_cause(0,midi_out,'note_on',chan,notesList[v][0].note_to_pitch(),notesList[v][0].getVolume())
-	sched_cause(notesList[v][0].getNoteEnd(),midi_out,'note_on',chan,notesList[v][0].note_to_pitch(),0)
+	for i=0 to len(notesList[v])
+		vol = notesList[v][i].getVolume()
+		vol2=vol+volume
+		if vol2>127:
+			vol2=127
+		elif vol2<0:
+			vol2=0
+		sched_cause(0,midi_out,'note_on',chan,notesList[v][i].note_to_pitch(),vol2)
+		sched_cause(notesList[v][i].getNoteEnd(),midi_out,'note_on',chan,notesList[v][i].note_to_pitch(),0)
 	if (v<len(notesList)-1)
 		sched_cause(notesList[v][0].getDuration(),nil,'playTrack',tr,notesList,v+1,chan)
 

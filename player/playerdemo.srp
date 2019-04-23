@@ -38,15 +38,15 @@ default_patterns = [pattern_jazz, pattern_tango, pattern_waltz,
                     pattern_rhumba, pattern_tap]
 
 
-def returnKey(curScale)
+def returnKey(curScale):
     for k = 0 to len(po_chords):
         if po_chords[k].index(curScale) > -1:
-            display po_chords[k].index(curScale)
+            #display po_chords[k].index(curScale)
             return po_chords[k].index(curScale)
-    display "none"
+    #display "none"
     return 0;
 
-def play_a_measure()
+def play_a_measure():
     # compute a measure using these variables:
     #    cur_style - a symbol representing style to play (if
     #       this is not your style, do not play)
@@ -69,8 +69,10 @@ def play_a_measure()
     if cur_style == 'rock'
         setTempo(cur_bps)
         k=returnKey(cur_scale)
-        processAllTracks(k,cur_beats_per_measure)
+        processAllTracks(k,cur_beats_per_measure,velocity_offset)
         playAllTracks()
+    else
+        midi_out.alloff()
 
 
 
