@@ -1,0 +1,14 @@
+# Friendly databases of ideas and stuff
+# STARTED, WILL WORK ON LATER BECAUSE VERY TIRED
+
+//two notes per measure, 4 beats per measure
+dur_2_4 = [[2.0, 2], [1.0, 3], [1.5, 2.5]]
+
+//two notes per measure, 3 beats per measure
+dur_2_3 = [[1.0, 2], [2.0, 1], [1.5, 1.5], 2.5, 0.5]
+
+//three notes per measure, 4 beats per measure
+dur_3_4 = [[1.0, 2, 1], [1.5, 1.5, 1], [3, 0.5, 0.5], [2, 1.75, 0.25]]
+
+//three notes per measure, 3 beats per measure
+dur_3_3 = [[1.0, 1, 1], [1.5, 0.5, 1], [2, 0.5, 0.5], [1, 1.75, 0.25]]
