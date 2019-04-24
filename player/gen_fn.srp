@@ -102,6 +102,76 @@ def gen_percussion_auto():
     
     return perc_arr
 
+def get_key(cur_scale):
+    #get key from scale
+
+    if (cur_scale[6] == nil and cur_scale[1] == nil):
+        #C major
+        key = 0 
+    elif (cur_scale[6] == "t" and cur_scale[1] == nil):
+        #D major
+        #key = 
+    elif (cur_scale[6] == "t" and cur_scale[1] == "t" and
+            cur_scale[8] == nil):
+        #A major
+        #key = 
+    elif (cur_scale[6] == "t" and cur_scale[1] == "t" and
+            cur_scale[8] == "t" and cur_scale[3] == nil):
+        #E major
+        #key = 
+    elif (cur_scale[6] == "t" and cur_scale[1] == "t" and 
+            cur_scale[8] == "t" and cur_scale[3] == "t" and
+            cur_scale[11] == nil):
+        #B major
+        #key = 
+    elif (cur_scale[6] == "t" and cur_scale[1] == "t" and
+            cur_scale[8] == "t" and cur_scale[3] == "t" and
+            cur_scale[11] == "t" and cur_scale[4] == nil):
+        #F sharp major
+        #key = 
+    elif (cur_scale[6] == "t" and cur_scale[1] == "t" and
+            cur_scale[8] == "t" and cur_scale[3] == "t" and
+            cur_scale[11] == "t" and cur_scale[4] == "t" and
+            cur_scale[0] == "t"):
+        #C sharp major
+        #key =
+    elif (cur_scale[10] == "t" and cur_scale[3] == nil):
+        #F major 
+        #key =
+    elif (cur_scale[10] == "t" and cur_scale[3] == "t" and
+            cur_scale[8] == nil):
+        #B flat major
+        #key =
+    elif (cur_scale[10] == "t" and cur_scale[3] == "t" and
+            cur_scale[8] == "t" and cur_scale[1] == nil):
+        #E flat major
+        #key =
+    elif (cur_scale[10] == "t" and cur_scale[3] == "t" and
+            cur_scale[8] == "t" and cur_scale[1] == "t" and
+            cur_scale[6] == nil):
+        #A flat major
+        #key = 
+    elif (cur_scale[10] == "t" and cur_scale[3] == "t" and
+            cur_scale[8] == "t" and cur_scale[1] == "t" and
+            cur_scale[6] == "t" and cur_scale[11] ==  nil):
+        #D flat major
+        #key = 
+    elif (cur_scale[10] == "t" and cur_scale[3] == "t" and
+            cur_scale[8] == "t" and cur_scale[1] == "t" and
+            cur_scale[6] == "t" and cur_scale[11] ==  "t" and
+            cur_scale[4] == nil):
+        #G flat major
+        #key = 
+    elif (cur_scale[10] == "t" and cur_scale[3] == "t" and
+            cur_scale[8] == "t" and cur_scale[1] == "t" and
+            cur_scale[6] == "t" and cur_scale[11] ==  "t" and
+            cur_scale[4] == "t"):
+        #C flat major
+        #key = 
+
+    #return key
+    return 0
+
 def get_pitch(count):
     return 60
 
@@ -139,25 +209,18 @@ def gen_note_prob(note, cur_scale):
     return prob_arr
 
 def gen_melody_motif():
+    #generate array of notes based on existing pitch sequence and durations
     melody_arr = []
-    total_time = cur_beats_per_measure/cur_bps
     
-    cur_time = 0
-    count = 0
-
-    for i=0 to 3:
-        while (cur_time < total_time):
+    for i=0 to 4:
+        for j=0 to len(pitch_arr):
             pitch = get_pitch(count)
             dur = get_dur(count)
-            cur_note = note(pitch, 0, 80, dur) 
+            key = get_key(cur_scale)
+            cur_note = note(pitch, key, 80, dur) 
             
             melody_arr.append(cur_note)
-            cur_time = cur_time + dur
-            count = count + 1
-        cur_time = 0
-        count = 0
 
-    display melody_arr
     return melody_arr
     
 def play_melody_user(index, curTrack):
