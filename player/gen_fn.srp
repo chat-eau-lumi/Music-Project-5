@@ -43,7 +43,11 @@ default_patterns = [pattern_jazz, pattern_tango, pattern_waltz,
                     pattern_rhumba, pattern_tap]
 
 #melody duration arrays
-durations = [0.125, 0.25, 0.5, 1, 2, 3, 4]
+dur_2_4 = [[2,2],[1,3],[1.5,2.5]]
+dur_2_3 = [[1,2],[2,1],[1.5,1.5],[2.5,0.5]]
+dur_3_4 = [[1,2,1],[1.5,1.5,1],[3,0.5,0.5],[2,1.75,0.25]]
+dur_3_3 = [[1,1,1],[1.5,0.5,1],[2,0.5,0.5],[1,1.75,0.25]]
+allDurations = [dur_2_4, dur_2_3, dur_3_4, dur_3_3]
 
 #melody pitch arrays
 
@@ -175,8 +179,12 @@ def get_key(cur_scale):
 def get_pitch(count):
     return 60
 
-def get_dur(count):
-    return 1
+def get_dur(measure, noteIndex, durInd):
+    curArray = allDurations[durInd]
+    curMeasure = curArray[measure]
+    curDur = curMeasure[noteIndex]
+ 
+    return curDur
 
 def gen_melody_array(scale):
     prob = []
@@ -211,11 +219,13 @@ def gen_note_prob(note, cur_scale):
 def gen_melody_motif():
     #generate array of notes based on existing pitch sequence and durations
     melody_arr = []
+    durIndex = int(random() * 4)
     
     for i=0 to 4:
         for j=0 to len(pitch_arr):
-            pitch = get_pitch(count)
-            dur = get_dur(count)
+            pitch = get_pitch(j)
+            dur = get_dur(i, j, durIndex)
+
             key = get_key(cur_scale)
             cur_note = note(pitch, key, 80, dur) 
             
