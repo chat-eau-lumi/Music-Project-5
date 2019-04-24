@@ -59,8 +59,6 @@ def play_percussion():
     play_percussion_auto(0, "", newTrack)
 
 def gen_percussion_auto(): 
-    #if (user_input != ""):
-        #choose a pattern using user input
     if (cur_style == 'jazz'):
         perc_pattern = pattern_jazz
     elif (cur_style == 'tango'):
@@ -74,25 +72,32 @@ def gen_percussion_auto():
     else:
         pattern = irandom(4)
         perc_pattern = default_patterns[pattern]
-    #else:
-    #    perc_pattern = user_input
 
     index = index + 1
     #reset duration to be played only if style changed or out_of_range
-    #if (prev_style != cur_style):
-    #    prev_style = cur_style
-    #    index = 0
-    #if (index > len(perc_pattern)-1):
-    #    index = index % len(perc_pattern)
 
     perc_arr = []
     perc_arr.append([])
 
-    for i from 0 to 4:
-        for j from 0 to len(perc_pattern):
-            cur_beat = note() 
-            perc_arr[i].append(cur_beat)
-        perc_arr.append([])
+    curBeat = cur_beats_per_measure
+    total = sum(perc_pattern)
+    curFactor = curBeat / total
+    newList = []
+    # make sure that list of durations is relative to current beat
+    for i = 0 to len(perc_pattern):
+        newList.append(curFactor * perc_pattern[i])
+
+    duration = []
+    curBPS = cur_bps
+    # calculate duration for each beat
+    for i = 0 to len(perc_pattern):
+        duration.append(curFactor[i] / curBPS)
+
+    # add four measures to perc arr
+    for i = 0 to 4:
+        for x = 0 to len(perc_pattern):
+            newNote = note(60, 1, 80, duration[x])
+            perc_arr.append(newNote)
     
     return perc_arr
 
@@ -151,20 +156,6 @@ def get_next_note(prob, prev_note):
     return next_note
 
 def gen_melody_motif():
-    #sched_select(vtsched)
-
-    #display "playing"
-    #instr = 96
-    #instr = curTrack.getInstrument()
-   
-    #if (prev_note != -1):
-    #    midi_out.note_on(instr, prev_note, 0)
-
-    #index = index % len(cur_scale)
-   
-    #total_time = cur_beats_per_measure
-
-    #new_arr = curTrack.array
     melody_arr = []
     melody_arr.append([])
     cur_measure = new_arr[0]
