@@ -108,6 +108,36 @@ def get_pitch(count):
 def get_dur(count):
     return 1
 
+def gen_melody_array(scale):
+    prob = []
+    note_prob = []
+
+    #generate array of probabilities of moving from one note to another
+    for note=0 to 12:
+        if cur_scale[note] == t:
+            note_prob = gen_note_prob(note, cur_scale)
+            prob.append(note_prob)
+        else:
+            prob.append(0)
+
+    return prob
+
+def gen_note_prob(note, cur_scale):
+    num_notes = len(cur_scale)
+    prob_arr = []
+    
+    #generate probability by considering distance between two notes
+    for i=0 to num_notes:
+        if (cur_scale[i] == 't'):
+            if (i == note):
+                prob_arr.append(irandom(5))
+            else:
+                distance = abs(note - i)-1
+                prob_arr.append(irandom(distance))
+        else:
+            prob_arr.append(0)
+    return prob_arr
+
 def gen_melody_motif():
     melody_arr = []
     total_time = cur_beats_per_measure/cur_bps
