@@ -34,7 +34,7 @@ po_chords = [[[t, nil, t, nil, t, t, nil, t, nil, t, nil, t ],
               [nil, t, t, nil, t, nil, t, nil, t, t, nil, t ], 
               [t, nil, t, t, nil, t, nil, t, nil, t, t, nil ], 
               [nil, t, nil, t, t, nil, t, nil, t, nil, t, t ]],
-             [[t, nil, t, t, nil, t, nil, t, t, nil, t, nil ]
+             [[t, nil, t, t, nil, t, nil, t, t, nil, t, nil ],
               [nil, t, nil, t, t, nil, t, nil, t, t, nil, t ], 
               [t, nil, t, nil, t, t, nil, t, nil, t, t, nil ], 
               [nil, t, nil, t, nil, t, t, nil, t, nil, t, t ], 
