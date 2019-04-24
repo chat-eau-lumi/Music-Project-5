@@ -113,9 +113,9 @@ class track:
         newRatio=1
 
         if (type == "melody" or type == "harmony"): 
-            instrument = 0x60 #piano
+            instrument = 1 #piano
         else:
-            instrument = 0x35 #drum
+            instrument = 116 #drum
 
   
     #methods to get variables

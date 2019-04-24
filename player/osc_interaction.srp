@@ -36,8 +36,7 @@ tempo=120
 
 def initializeOSC():
 	prefs = Prefs("project3")
-	midi_devices = Midi_devices(prefs)
-
+	#midi_devices = Midi_devices(prefs)
 	o2_initialize("llo1", false)
 	//o2_clock_set()
 	//sched_o2_enabled = true
@@ -121,7 +120,7 @@ def trackEdit(timestamp,address,types,rest parameters):
 				allTracks[currentTrack].changeInstrument(getMelodyInstrument(p1,p2))
 
 def insertMelody(timestamp,address,types,rest parameters):
-	#display "OSC", timestamp, address, types, parameters
+	display "OSC", timestamp, address, types, parameters
 	if (address == "/melody/mc/record") 
 		if parameters[0]==[1]
 			resetMelody()
@@ -309,11 +308,12 @@ def playAllTracks():
 	#display(len(allTracks))
 	sched_select(vtsched)
 	for i = 0 to (len(allTracks))
-		//if (allTracks[i].getPureArray()==[] or allTracks[i].getReset()==-1):
-		//	if (allTracks[i].getTrack() == "rhythm")
-		//		allTracks[i].setArray(play_percussion_auto())
-		//	else
-		//		allTracks[i].setArray(play_melody_auto())
+		allTracks[i].getTrack()
+		if (allTracks[i].getPureArray()==[] or allTracks[i].getReset()==0):
+			if (allTracks[i].getTrack() == "rhythm")
+				allTracks[i].setArray(gen_percussion_auto())
+			else
+				allTracks[i].setArray(gen_melody_motif())
 		playTrack(allTracks[i],allTracks[i].getArray(1),0,i)
 
 def playTrack(tr,notesList,v,chan):

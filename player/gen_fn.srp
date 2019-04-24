@@ -64,6 +64,12 @@ def play_percussion():
     display newTrack.getInstrument()
     play_percussion_auto(0, "", newTrack)
 
+def sum(p):
+    tot=0
+    for i=0 to len(p)
+        tot=tot+p[i]
+    return tot
+
 def gen_percussion_auto(): 
     if (cur_style == 'jazz'):
         perc_pattern = pattern_jazz
@@ -79,11 +85,11 @@ def gen_percussion_auto():
         pattern = irandom(4)
         perc_pattern = default_patterns[pattern]
 
-    index = index + 1
+    //index = index + 1
     #reset duration to be played only if style changed or out_of_range
 
     perc_arr = []
-    perc_arr.append([])
+    //perc_arr.append([])
 
     curBeat = cur_beats_per_measure
     total = sum(perc_pattern)
@@ -97,13 +103,13 @@ def gen_percussion_auto():
     curBPS = cur_bps
     # calculate duration for each beat
     for i = 0 to len(perc_pattern):
-        duration.append(curFactor[i] / curBPS)
+        duration.append(perc_pattern[i] / curBPS)
 
     # add four measures to perc arr
     for i = 0 to 4:
         for x = 0 to len(perc_pattern):
             newNote = note(60, 1, 80, duration[x])
-            perc_arr.append(newNote)
+            perc_arr.append([newNote])
     
     return perc_arr
 
@@ -231,7 +237,7 @@ def gen_melody_motif():
             key = get_key(cur_scale)
             cur_note = note(pitch, key, 80, dur) 
             
-            melody_arr.append(cur_note)
+            melody_arr.append([cur_note])
 
     return melody_arr
     
