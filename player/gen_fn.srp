@@ -57,7 +57,7 @@ cur_scale = [t, nil, t, nil, t, t, nil, t, nil, t, nil, t]
 cur_bass = 0
 cur_style = ""
 cur_beats_per_measure = 4
-cur_bps = 0.5
+cur_bps = 1
 
 def play_percussion():
     newTrack = track([], 1, "perc")
@@ -190,7 +190,7 @@ def get_dur(measure, noteIndex, durInd):
     curArray = allDurations[durInd]
     measure = measure % len(curArray)
     curMeasure = curArray[measure]
-    curDur = curMeasure[noteIndex]
+    curDur = curMeasure[noteIndex] / cur_bps
  
     return curDur
 
@@ -280,5 +280,5 @@ def main():
     play_melody_user(melody)
 
 #gen_melody_motif()
-#main()
+main()
 #play_melody()
