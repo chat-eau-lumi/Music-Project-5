@@ -247,5 +247,3 @@ def play_melody_user(index, curTrack):
         #sched_cause(real_delay(1), nil, 'play_melody')
         #sched_cause(real_delay(1), nil, 'play_percussion')
 
-#main()
-#play_melody()
