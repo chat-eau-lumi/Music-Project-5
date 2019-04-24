@@ -179,12 +179,12 @@ def get_key(cur_scale):
             cur_scale[4] == "t"):
         #C flat major
         key = 0
-
+    
     #return key
     return 0
 
-def get_pitch(count):
-    return 60
+def get_pitch(note_prob):
+    return get_next(note_prob)
 
 def get_dur(measure, noteIndex, durInd):
     curArray = allDurations[durInd]
@@ -194,7 +194,7 @@ def get_dur(measure, noteIndex, durInd):
  
     return curDur
 
-def gen_melody_array(scale):
+def gen_melody_prob(scale):
     prob = []
     note_prob = []
 
@@ -224,82 +224,61 @@ def gen_note_prob(note, cur_scale):
             prob_arr.append(0)
     return prob_arr
 
+def get_next(note_prob):
+    max_prob = note_prob[0]
+    max_index = 0
+    possible_notes = []
+
+    for i=1 to len(note_prob):
+        if (note_prob[i] > 0):
+            possible_notes.append(i)
+        if (note_prob[i] > max_prob):
+            max_index = i
+            max_prob = note_prob[i]
+        elif (note_prob[i] == max_prob):
+            if (irandom(1) == 1):
+                max_index = i
+                max_prob = note_prob[i]
+    if (len(possible_notes) == 1):
+        return max_index
+    else:
+        decider = int(random() * len(possible_notes))
+        for i=0 to len(possible_notes):
+            if (decider % possible_notes[i] == 0):
+                max_index = possible_notes[i]
+
+    return max_index + 60
+
 def gen_melody_motif():
     #generate array of notes based on existing pitch sequence and durations
     melody_arr = []
     durIndex = int(random() * 4)
-    
+    melody_prob = gen_melody_prob(cur_scale)
+    last_pitch = cur_bass
+
     for i=0 to 4:
         for j=0 to len(pitch_arr):
-            pitch = get_pitch(j)
+            pitch = get_pitch(melody_prob[last_pitch])
             dur = get_dur(i, j, durIndex)
 
             key = get_key(cur_scale)
             cur_note = note(pitch, key, 80, dur) 
             
+            last_pitch = pitch%12
             melody_arr.append([cur_note])
-
-    return melody_arr
+    return melody_arr 
     
-def play_melody_user(index, curTrack):
-
-    arr = curTrack.array
-    instr = curTrack.getInstrument()
-    cur_index = index
-
-    if (index > len(arr)):
-        cur_index = index % len(arr)
-
-    cur_arr = arr[cur_index][0]
-    note = cur_arr.pitch 
-    duration = cur_arr.sduration
-    volume = cur_arr.volume
-
-    if (index > 0):
-        if (cur_index == 0):
-            prev_arr = arr[len(arr)-1][0]
-            lenPrev = len(prev_arr)
-            
-            # turn off all notes in prev array
-            for i=0 to (lenPrev):
-                curNote = prev_arr[i]
-                prevPitch = curNote.pitch
-                midi_out.note_on(instr, prevPitch,0)
-
-        else:
-            prev_arr = arr[cur_index-1]
-            lenPrev = len(prev_arr)
-            for i=0 to (lenPrev):
-                curNote = prev_arr[i]
-                prevPitch = curNote.pitch
-                midi_out.note_on(instr, prevPitch,0)
-
-    midi_out.note_on(instr, note, volume)
-    index = index + 1
+def play_melody_user(melody):
+    instr = 0
     
-    sched_cause(duration, nil, 'play_melody_user', index, track.array)
+    for i=0 to len(melody):
+        display "pitch: ", melody[i][0].pitchC
+        display "dur: ", melody[i][0].sduration
 
-#def play_melody():
-#    newTrack = track([], 1, "melody")
-#    prob = gen_melody_array(cur_scale)
-#    display newTrack.array
-#    display prob
-#    play_melody_auto(prob, newTrack)
+def main():
+    melody = gen_melody_motif()
+    play_melody_user(melody)
 
-#def main():
-    #random.seed(time_get())
-    #sched_init(2)
-    #prefs = Prefs("./prefs.txt")
-    #midiDevices = Midi_devices(prefs, open_later = true)
-    #success = midiDevices.open_midi(latency = 10, device = 'midi_out_device')
-    #if not success
-    #    print "PLEASE SELECT A VALID OUTPUT DEVICE AND RESTART THIS PROGRAM"
-    #else
-        #sched_select(vtsched)
-        #sched_set_period(0.5)
-        #sched_cause(real_delay(1), nil, 'play_melody')
-        #sched_cause(real_delay(1), nil, 'play_percussion')
-
-gen_melody_motif()
+#gen_melody_motif()
 #main()
 #play_melody()
