@@ -42,8 +42,10 @@ pattern_tap = [0.5, 0.5, 0.5, 0.5]
 default_patterns = [pattern_jazz, pattern_tango, pattern_waltz, 
                     pattern_rhumba, pattern_tap]
 
-#durations
+#melody duration arrays
 durations = [0.125, 0.25, 0.5, 1, 2, 3, 4]
+
+#melody pitch arrays
 
 # need to write get prob
 cur_scale = [t, nil, t, nil, t, t, nil, t, nil, t, nil, t]
@@ -56,11 +58,7 @@ def play_percussion():
     display newTrack.getInstrument()
     play_percussion_auto(0, "", newTrack)
 
-def play_percussion_auto(index, prev_style, curTrack): 
-    sched_select(vtsched)
-    instr = curTrack.getInstrument()
-    //display instr
-
+def gen_percussion_auto(): 
     #if (user_input != ""):
         #choose a pattern using user input
     if (cur_style == 'jazz'):
@@ -81,25 +79,23 @@ def play_percussion_auto(index, prev_style, curTrack):
 
     index = index + 1
     #reset duration to be played only if style changed or out_of_range
-    if (prev_style != cur_style):
-        prev_style = cur_style
-        index = 0
-    if (index > len(perc_pattern)-1):
-        index = index % len(perc_pattern)
+    #if (prev_style != cur_style):
+    #    prev_style = cur_style
+    #    index = 0
+    #if (index > len(perc_pattern)-1):
+    #    index = index % len(perc_pattern)
 
-    #for i from 0 to 5:
-     #for j from 0 to len(perc_pattern):
-      #cur_note = curTrack.arr[i][j] 
-      #cur_note = 60
-      #cur_note.sduration = perc_pattern[j]
-    #return curTrack
+    perc_arr = []
+    perc_arr.append([])
 
-    #play percussion
-    midi_out.note_on(instr, 60, 80)
+    for i from 0 to 4:
+        for j from 0 to len(perc_pattern):
+            cur_beat = note() 
+            perc_arr[i].append(cur_beat)
+        perc_arr.append([])
+    
+    return perc_arr
 
-    #schedule using current duration
-    sched_cause(perc_pattern[index], nil, 'play_percussion_auto', index, prev_style, curTrack)
-        
 def gen_melody_array(cur_scale):
     prob = []
     note_prob = []
@@ -154,7 +150,7 @@ def get_next_note(prob, prev_note):
      
     return next_note
 
-def play_melody_auto(prob, curTrack):
+def gen_melody_motif():
     #sched_select(vtsched)
 
     #display "playing"
@@ -166,13 +162,14 @@ def play_melody_auto(prob, curTrack):
 
     #index = index % len(cur_scale)
    
-    total_time = cur_beats_per_measure
+    #total_time = cur_beats_per_measure
 
-    new_arr = curTrack.array
-    new_arr.append([])
+    #new_arr = curTrack.array
+    melody_arr = []
+    melody_arr.append([])
     cur_measure = new_arr[0]
     #display cur_measure
-    dur = durations[irandom(6)]
+    #dur = durations[irandom(6)]
     cur_note = note(cur_bass, 0, 100, dur)
     cur_measure.append(cur_note)
 
@@ -181,24 +178,24 @@ def play_melody_auto(prob, curTrack):
     #cur_time = cur_note.sDuration 
     #count = 1
 
-    #for i=0 to 1:
-    #    while (cur_time < total_time):
-    #        cur_note = new_arr[i][count]
-    #        if (count == 0):
-    #            last_note = len(new_arr[i-1])-1
-    #            note = get_next_note(prob, new_arr[i-1][last_note])
-    #        else:
-    #            note = get_next_note(prob, new_arr[i][count-1]
-    #        
-    #        cur_note.pitchC = cur_bass + note
-    #        cur_note.sDuration = getDur(cur_time, total_time)
-    #        cur_time = cur_time + cur_note.sDuration
-    #        count = count + 1
+    for i=0 to 3:
+        while (cur_time < total_time):
+            cur_note = new_arr[i][count]
+            if (count == 0):
+                last_note = len(new_arr[i-1])-1
+                note = get_next_note(prob, new_arr[i-1][last_note])
+            else:
+                note = get_next_note(prob, new_arr[i][count-1]
+            
+            cur_note.pitchC = cur_bass + note
+            cur_note.sDuration = getDur(cur_time, total_time)
+            cur_time = cur_time + cur_note.sDuration
+            count = count + 1
         
-    #    cur_time = 0
-    #    count = 0
+        cur_time = 0
+        count = 0
 
-    return curTrack
+    return melody_arr
     
 def play_melody_user(index, curTrack):
 
@@ -238,12 +235,12 @@ def play_melody_user(index, curTrack):
     
     sched_cause(duration, nil, 'play_melody_user', index, track.array)
 
-def play_melody():
-    newTrack = track([], 1, "melody")
-    prob = gen_melody_array(cur_scale)
-    display newTrack.array
-    display prob
-    play_melody_auto(prob, newTrack)
+#def play_melody():
+#    newTrack = track([], 1, "melody")
+#    prob = gen_melody_array(cur_scale)
+#    display newTrack.array
+#    display prob
+#    play_melody_auto(prob, newTrack)
 
 #def main():
     #random.seed(time_get())
@@ -260,4 +257,4 @@ def play_melody():
         #sched_cause(real_delay(1), nil, 'play_percussion')
 
 #main()
-play_melody()
+#play_melody()
