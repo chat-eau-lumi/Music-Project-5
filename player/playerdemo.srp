@@ -22,10 +22,30 @@ require "osc_interaction"
 //Really bad functions that supposedly find your key
 //ONLY IMPLEMENTS MAJ, MIN, AND CHROMATIC
 
-po_chords = [[[t, nil, t, nil, t, t, nil, t, nil, t, nil, t], [nil, t, nil, t, t, nil, t, nil, t, nil, t, t ], [t, nil, t, t, nil, t, nil, t, nil, t, t, nil ], [nil, t, t, nil, t, nil, t, nil, t, t, nil, t ], [t, t, nil, t, nil, t, nil, t, t, nil, t, nil ], [t, nil, t, nil, t, nil, t, t, nil, t, nil, t ],
-              [nil, t, nil, t, nil, t, t, nil, t, nil, t, t ], [t, nil, t, nil, t, t, nil, t, nil, t, t, nil ], [nil, t, nil, t, t, nil, t, nil, t, t, nil, t ], [t, nil, t, t, nil, t, nil, t, t, nil, t, nil ], [nil, t, t, nil, t, nil, t, t, nil, t, nil, t ], [t, t, nil, t, nil, t, t, nil, t, nil, t, nil ]],
-             [[t, nil, t, t, nil, t, nil, t, t, nil, t, nil ], [nil, t, t, nil, t, nil, t, t, nil, t, nil, t ], [t, t, nil, t, nil, t, t, nil, t, nil, t, nil ], [t, nil, t, nil, t, t, nil, t, nil, t, nil, t ], [nil, t, nil, t, t, nil, t, nil, t, nil, t, t ], [t, nil, t, t, nil, t, nil, t, nil, t, t, nil ],
-              [nil, t, t, nil, t, nil, t, nil, t, t, nil, t ], [t, t, nil, t, nil, t, nil, t, t, nil, t, nil ], [t, nil, t, nil, t, nil, t, t, nil, t, nil, t ], [nil, t, nil, t, nil, t, t, nil, t, nil, t, t ], [t, nil, t, nil, t, t, nil, t, nil, t, t, nil ], [nil, t, nil, t, t, nil, t, nil, t, t, nil, t ]],
+po_chords = [[[t, nil, t, nil, t, t, nil, t, nil, t, nil, t ], 
+              [t, t, nil, t, nil, t, t, nil, t, nil, t, nil ], 
+              [nil, t, t, nil, t, nil, t, t, nil, t, nil, t ], 
+              [t, nil, t, t, nil, t, nil, t, t, nil, t, nil ], 
+              [nil, t, nil, t, t, nil, t, nil, t, t, nil, t ], 
+              [t, nil, t, nil, t, t, nil, t, nil, t, t, nil ], 
+              [nil, t, nil, t, nil, t, t, nil, t, nil, t, t ],  
+              [t, nil, t, nil, t, nil, t, t, nil, t, nil, t ], 
+              [t, t, nil, t, nil, t, nil, t, t, nil, t, nil ], 
+              [nil, t, t, nil, t, nil, t, nil, t, t, nil, t ], 
+              [t, nil, t, t, nil, t, nil, t, nil, t, t, nil ], 
+              [nil, t, nil, t, t, nil, t, nil, t, nil, t, t ]],
+             [[t, nil, t, t, nil, t, nil, t, t, nil, t, nil ]
+              [nil, t, nil, t, t, nil, t, nil, t, t, nil, t ], 
+              [t, nil, t, nil, t, t, nil, t, nil, t, t, nil ], 
+              [nil, t, nil, t, nil, t, t, nil, t, nil, t, t ], 
+              [t, nil, t, nil, t, nil, t, t, nil, t, nil, t ], 
+              [t, t, nil, t, nil, t, nil, t, t, nil, t, nil ], 
+              [nil, t, t, nil, t, nil, t, nil, t, t, nil, t ], 
+              [t, nil, t, t, nil, t, nil, t, nil, t, t, nil ], 
+              [nil, t, nil, t, t, nil, t, nil, t, nil, t, t ], 
+              [t, nil, t, nil, t, t, nil, t, nil, t, nil, t ], 
+              [t, t, nil, t, nil, t, t, nil, t, nil, t, nil ], 
+              [nil, t, t, nil, t, nil, t, t, nil, t, nil, t ]],
              [[t, t, t, t, t, t, t, t, t, t, t, t ]]]
 
 #default patterns

@@ -3,20 +3,11 @@ require "debug"
 require "midi-io"
 require "prefs"
 
-# Global variables
-MIN_PITCH = 0;
-MAX_PITCH = 12;
-
 # NOTES
-# There are three representation of note pitches to consider: 
-# * "keys" for piano OSC input ((single-character string, int octave))
-# * "pitches" for MIDI pitch values (int)
-# * "notes" octave/interval/key/staccato for music generation (note)
 
-// key is an offset, with c = 0, which may cause some problems but 
-// hopefully shouldn't
+// key is an offset, with c = 0, of what key was playing when the
+// note was created.
 class note:
-
     var key
     var staccato
     var sduration
@@ -39,7 +30,7 @@ class note:
         noteEnd=dur-.05
 
     def note_to_pitch():
-        return pitchC+key
+        return pitchC + key
     
     def staccato_on():
         staccato = true
@@ -224,10 +215,11 @@ class track:
             curNote = array[x][0]
             curNote.setVolume(newRatio*trackVolFactor)
 
+    //changes the key for all notes in the track to k
     def changeKey(k):
         curLen = len(array)
         for x=0 to (curLen):
-            for y = 0 to len(array[x])
+            for y = 0 to len(array[x]):
                 curNote = array[x][y]
                 curNote.setKey(k)
 
