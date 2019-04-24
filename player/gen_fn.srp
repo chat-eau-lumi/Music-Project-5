@@ -52,6 +52,7 @@ cur_scale = [t, nil, t, nil, t, t, nil, t, nil, t, nil, t]
 cur_bass = 0
 cur_style = ""
 cur_beats_per_measure = 4
+cur_bps = 0.5
 
 def play_percussion():
     newTrack = track([], 1, "perc")
@@ -88,113 +89,40 @@ def gen_percussion_auto():
     perc_arr = []
     perc_arr.append([])
 
-    for i from 0 to 4:
-        for j from 0 to len(perc_pattern):
+    for i=0 to 4:
+        for j=0 to len(perc_pattern):
             cur_beat = note() 
             perc_arr[i].append(cur_beat)
         perc_arr.append([])
     
     return perc_arr
 
-def gen_melody_array(cur_scale):
-    prob = []
-    note_prob = []
+def get_pitch(count):
+    return 60
 
-    #gnerate array of probabilities of moving from one note to another
-    for note=0 to 12:
-        if cur_scale[note] == t:
-            note_prob = gen_note_prob(note, cur_scale)
-            prob.append(note_prob)
-        else:
-            prob.append(0)
-
-    return prob
-
-def gen_note_prob(note, cur_scale):
-    num_notes = len(cur_scale)
-    prob_arr = []
-    
-    #generate probability by considering distance between two notes
-    for i=0 to num_notes:
-        if (cur_scale[i] == 't'):
-            if (i == note):
-                prob_arr.append(irandom(5))
-            else:
-                distance = abs(note - i)-1
-                prob_arr.append(irandom(distance))
-        else:
-            prob_arr.append(0)
-    return prob_arr
-
-def get_next_note(prob, prev_note):
-#return note with max prob for now
-    next_note = 0
-    display prob
-    max = prob[0]
-
-    for i=1 to len(prob)
-        if prob[i] >= max:
-            max = prob[i]
-            next_note = i
-   
-    if prev_note > 1: 
-        if prob[prev_note] <= 0:
-            new_prob = irandom(abs(next_note-prev_note))
-            if new_prob == 0:
-                new_prob = abs(next_note-prev_note)
-            prob[prev_note] = new_prob
-        else:
-            prob[prev_note] = prob[prev_note] + 1
-    
-    prob[next_note] = prob[next_note] - 2
-     
-    return next_note
+def get_dur(count):
+    return 1
 
 def gen_melody_motif():
-    #sched_select(vtsched)
-
-    #display "playing"
-    #instr = 96
-    #instr = curTrack.getInstrument()
-   
-    #if (prev_note != -1):
-    #    midi_out.note_on(instr, prev_note, 0)
-
-    #index = index % len(cur_scale)
-   
-    #total_time = cur_beats_per_measure
-
-    #new_arr = curTrack.array
     melody_arr = []
-    melody_arr.append([])
-    cur_measure = new_arr[0]
-    #display cur_measure
-    #dur = durations[irandom(6)]
-    cur_note = note(cur_bass, 0, 100, dur)
-    cur_measure.append(cur_note)
-
-    #cur_note.pitchC = cur_bass + note
-    #cur_note.sDuration = durations[irandom(6)]
-    #cur_time = cur_note.sDuration 
-    #count = 1
+    total_time = cur_beats_per_measure/cur_bps
+    
+    cur_time = 0
+    count = 0
 
     for i=0 to 3:
         while (cur_time < total_time):
-            cur_note = new_arr[i][count]
-            if (count == 0):
-                last_note = len(new_arr[i-1])-1
-                note = get_next_note(prob, new_arr[i-1][last_note])
-            else:
-                note = get_next_note(prob, new_arr[i][count-1]
+            pitch = get_pitch(count)
+            dur = get_dur(count)
+            cur_note = note(pitch, 0, 80, dur) 
             
-            cur_note.pitchC = cur_bass + note
-            cur_note.sDuration = getDur(cur_time, total_time)
-            cur_time = cur_time + cur_note.sDuration
+            melody_arr.append(cur_note)
+            cur_time = cur_time + dur
             count = count + 1
-        
         cur_time = 0
         count = 0
 
+    display melody_arr
     return melody_arr
     
 def play_melody_user(index, curTrack):
@@ -256,5 +184,6 @@ def play_melody_user(index, curTrack):
         #sched_cause(real_delay(1), nil, 'play_melody')
         #sched_cause(real_delay(1), nil, 'play_percussion')
 
+gen_melody_motif()
 #main()
 #play_melody()
