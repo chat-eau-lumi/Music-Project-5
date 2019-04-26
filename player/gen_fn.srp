@@ -280,5 +280,5 @@ def main():
     play_melody_user(melody)
 
 #gen_melody_motif()
-main()
+#main()
 #play_melody()
