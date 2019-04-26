@@ -192,7 +192,7 @@ def get_dur(measure, noteIndex, durInd):
     curMeasure = curArray[measure]
     curDur = curMeasure[noteIndex] / cur_bps
  
-    return curDur
+    return curDur / 4
 
 def gen_melody_prob(scale):
     prob = []
@@ -234,6 +234,8 @@ def get_next(note_prob):
     max_index = 0
     possible_notes = []
 
+    # if has non-zero probability, then could be a next note
+    # also looking for note with max prob
     for i=1 to len(note_prob):
         if (note_prob[i] > 0):
             possible_notes.append(i)
