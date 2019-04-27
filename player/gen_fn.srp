@@ -186,11 +186,14 @@ def get_key(cur_scale):
 def get_pitch(note_prob):
     return get_next(note_prob)
 
-def get_dur(measure, noteIndex, durInd):
+def get_dur(measure, noteIndex, durInd, run):
     curArray = allDurations[durInd]
     measure = measure % len(curArray)
     curMeasure = curArray[measure]
-    curDur = curMeasure[noteIndex] / cur_bps
+    if (run == 1):
+        curDur = 0.25
+    else:
+        curDur = curMeasure[noteIndex]
  
     return curDur / 4
 
@@ -256,17 +259,51 @@ def get_next(note_prob):
 
     return max_index + 60
 
+def get_num_notes(measures, num_measure, run):
+    num_beats = 0
+    num_measure = num_measure % len(measures)
+    cur_measure = measures[num_measure]
+
+    for i=0 to len(cur_measure):
+        num_beats = cur_measure[i]
+   
+    if (run == 1):
+        num_notes = num_beats/0.25
+    else:
+        num_notes = len(cur_measure)
+
+def get_run(note_index, cur_scale):
+    available = []
+    for i=0 to len(cur_scale):
+        if (cur_scale[i] != nil):
+            available.append(i)
+    return available[note_index] + 60
+
 def gen_melody_motif():
     #generate array of notes based on existing pitch sequence and durations
+    random_seed(time_date()[0])
+
     melody_arr = []
     durIndex = int(random() * 4)
     melody_prob = gen_melody_prob(cur_scale)
     last_pitch = cur_bass
+    count = 0
 
     for i=0 to 4:
-        for j=0 to len(pitch_arr):
-            pitch = get_pitch(melody_prob[last_pitch])
-            dur = get_dur(i, j, durIndex)
+        rand = irandom(8) % 4
+        if (rand == 0):
+            run = 1
+        else:
+            run = 0
+
+        num_notes = get_num_notes(allDurations[durIndex], i, run)
+
+        for j=0 to num_notes:
+            if (run == 1):
+                pitch = get_run(j, cur_scale)
+            else:
+                pitch = get_pitch(melody_prob[last_pitch])
+            dur = get_dur(i, j, durIndex, run)
 
             key = get_key(cur_scale)
             cur_note = note(pitch, key, 80, dur) 
