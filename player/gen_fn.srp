@@ -178,7 +178,7 @@ def get_key(cur_scale):
             cur_scale[6] == "t" and cur_scale[11] ==  "t" and
             cur_scale[4] == "t"):
         #C flat major
-        key = 0
+        key = 1
     
     #return key
     return 0
@@ -195,7 +195,7 @@ def get_dur(measure, noteIndex, durInd, run):
     else:
         curDur = curMeasure[noteIndex]
  
-    return curDur/cur_bps
+    return curDur / 4
 
 def gen_melody_prob(scale):
     prob = []
@@ -207,7 +207,7 @@ def gen_melody_prob(scale):
             note_prob = gen_note_prob(note, cur_scale)
             prob.append(note_prob)
         else:
-            prob.append(0)
+            prob.append([])
 
     return prob
 
@@ -218,20 +218,27 @@ def gen_note_prob(note, cur_scale):
     #generate probability by considering distance between two notes
     for i=0 to num_notes:
         if (cur_scale[i] == 't'):
+            # same note has less chance of being repeated
             if (i == note):
-                prob_arr.append(irandom(5))
+                prob_arr.append(0.5)
             else:
-                distance = abs(note - i)-1
-                prob_arr.append(irandom(distance))
+                distance = abs(note - i)
+                prob_arr.append(distance)
         else:
-            prob_arr.append(0)
+            prob_arr.append(irandom(1))
     return prob_arr
 
 def get_next(note_prob):
-    max_prob = note_prob[0]
+    // Edge case, if the note is not in scale, the note_prob = []
+    if note_prob == []:
+      max_prob = 0
+    else:
+      max_prob = note_prob[0]
     max_index = 0
     possible_notes = []
 
+    # if has non-zero probability, then could be a next note
+    # also looking for note with max prob
     for i=1 to len(note_prob):
         if (note_prob[i] > 0):
             possible_notes.append(i)
