@@ -195,7 +195,7 @@ def get_dur(measure, noteIndex, durInd, run):
     else:
         curDur = curMeasure[noteIndex]
  
-    return curDur / 4
+    return curDur 
 
 def gen_melody_prob(scale):
     prob = []
@@ -240,22 +240,26 @@ def get_next(note_prob):
     # if has non-zero probability, then could be a next note
     # also looking for note with max prob
     for i=1 to len(note_prob):
+        
+        # all possible notes
         if (note_prob[i] > 0):
             possible_notes.append(i)
+
+        # looking for note with max_prob
         if (note_prob[i] > max_prob):
             max_index = i
             max_prob = note_prob[i]
+
         elif (note_prob[i] == max_prob):
             if (irandom(1) == 1):
                 max_index = i
                 max_prob = note_prob[i]
+    
     if (len(possible_notes) == 1):
         return max_index
     else:
-        decider = int(random() * len(possible_notes))
-        for i=0 to len(possible_notes):
-            if (decider % possible_notes[i] == 0):
-                max_index = possible_notes[i]
+        decider = irandom(len(possible_notes))
+        max_index = possible_notes[decider]
 
     return max_index + 60
 
@@ -265,7 +269,7 @@ def get_num_notes(measures, num_measure, run):
     cur_measure = measures[num_measure]
 
     for i=0 to len(cur_measure):
-        num_beats = cur_measure[i]
+        num_beats = num_beats + cur_measure[i]
    
     if (run == 1):
         num_notes = num_beats/0.25
@@ -277,7 +281,8 @@ def get_run(note_index, cur_scale):
     for i=0 to len(cur_scale):
         if (cur_scale[i] != nil):
             available.append(i)
-    return available[note_index] + 60
+    curIndex = note_index % len(available)
+    return available[curIndex] + 60
 
 def gen_melody_motif():
     #generate array of notes based on existing pitch sequence and durations
@@ -289,7 +294,10 @@ def gen_melody_motif():
     last_pitch = cur_bass
     count = 0
 
+    # for each measure
     for i=0 to 4:
+        
+        # randomly choose if its a run
         rand = irandom(8) % 4
         if (rand == 0):
             run = 1
@@ -297,6 +305,8 @@ def gen_melody_motif():
             run = 0
 
         num_notes = get_num_notes(allDurations[durIndex], i, run)
+
+        display num_notes
 
         for j=0 to num_notes:
             if (run == 1):
