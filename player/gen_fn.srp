@@ -258,7 +258,7 @@ def get_next(note_prob):
     if (len(possible_notes) == 1):
         return max_index
     else:
-        decider = irandom(len(possible_notes))
+        decider = irandom(len(possible_notes)-1)
         max_index = possible_notes[decider]
 
     return max_index + 60
