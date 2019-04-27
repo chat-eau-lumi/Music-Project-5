@@ -29,6 +29,7 @@ class note:
         volFactor=1 
         noteEnd=dur-.05
 
+    //returns a final pitch; i.e. what is being played
     def note_to_pitch():
         return pitchC + key
     
