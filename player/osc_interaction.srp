@@ -296,16 +296,17 @@ def setTempo(t):
 
 
 		
-def processAllTracks(k,bpm,veloc):
+def processAllTracks(k,bpm,veloc, cur_scale):
 	#display("HI")
 	for i=0 to len(allTracks)
 		allTracks[i].setRealBPM(bpm)
-		allTracks[i].changeKey(k)
+		//allTracks[i].changeKey(k)
+		allTracks[i].snapToScale(cur_scale)
 	volume=veloc
 
 
 def playAllTracks():
-	#display(len(allTracks))
+	display(len(allTracks))
 	sched_select(vtsched)
 	for i = 0 to (len(allTracks))
 		allTracks[i].getTrack()

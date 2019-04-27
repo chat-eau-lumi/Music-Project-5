@@ -32,7 +32,20 @@ class note:
     //returns a final pitch; i.e. what is being played
     def note_to_pitch():
         return pitchC + key
-    
+
+    //returns a pitch from [0, 11], i.e. removes octaves
+    def get_scale_pitch():
+        return (pitchC + key) % 12
+
+    //returns the octave of the final note; i.e. what is played
+    def get_octave():
+        display idiv((pitchC + key), 12)
+        return idiv((pitchC + key), 12)
+
+    //sets the final pitch; i.e. what is heard, to pitch
+    def set_pitch(pitch):
+        pitchC = pitch - key
+
     def staccato_on():
         staccato = true
         
@@ -224,8 +237,15 @@ class track:
                 curNote = array[x][y]
                 curNote.setKey(k)
 
-   
-
-    
-
-    
+    //changes all notes to be in cur_scale, by making each
+    //note the closest (going up) note to it in the scale
+    def snapToScale(cur_scale):
+        display cur_scale
+        for i = 0 to len(array):
+            for j = 0 to len(array[i]):
+                new_o = array[i][j].get_octave()
+                new_p = array[i][j].get_scale_pitch()
+                //increment new_p until in scale
+                while cur_scale[new_p] != 't':
+                    new_p = (new_p + 1) % 12
+                array[i][j].set_pitch(new_p + (12 * new_o))

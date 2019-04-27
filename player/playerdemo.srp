@@ -89,7 +89,7 @@ def play_a_measure():
     if cur_style == 'rock'
         setTempo(cur_bps)
         k=returnKey(cur_scale)
-        processAllTracks(k,cur_beats_per_measure,velocity_offset)
+        processAllTracks(k,cur_beats_per_measure,velocity_offset, cur_scale)
         playAllTracks()
     else
         midi_out.alloff()

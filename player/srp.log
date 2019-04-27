@@ -1,6 +1,6 @@
 debug.srp created srp.log for error report...
 runtime exception handler called
-exception is: [31;49mundefined method - note_on[39;49m
+exception is: subscript out of bounds: 0
 frame variables: {}
 frame pc: -1
 frame method: <callin_method>
@@ -8,40 +8,69 @@ frame class: nil
 
 Debugger invoked.
 -----------------------------------------------------
-Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
+Method <callin_method> in class nil
 -----------------------------------------------------
-Method [32;49msched_poll[39;49m in class [34;49mnil[39;49m, char 7354 in file 
-    /Users/lisalo/serpent/lib/sched.srp
-Frame variables: {time: 1448.76, period: nil}
+Method sched_poll in class nil, char 7354 in file 
+    C:\Program Files\Serpent\lib\sched.srp
+Frame variables: {time: 1148, period: nil}
  169:     rtsched.poll(time)
                       ^
 -----------------------------------------------------
-Method [32;49mpoll[39;49m in class [34;49mScheduler[39;49m, char 12401 in file 
-    /Users/lisalo/serpent/lib/sched.srp
-Frame variables: {when: 1448.76, event: [1448.76, <obj@0x10b068500>, 'activate', []], target: <obj@0x10b068500>, message: 'activate', parms: []}
+Method poll in class Scheduler, char 12401 in file 
+    C:\Program Files\Serpent\lib\sched.srp
+Frame variables: {when: 1148, event: [1148, <obj@0000020336C22590>, 'activate', []], target: <obj@0000020336C22590>, message: 'activate', parms: []}
  304:             general_apply(target, message, parms)
                                ^
 -----------------------------------------------------
-Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 28059 in file 
-    /Users/lisalo/serpent/lib/sched.srp
-Frame variables: {target: <obj@0x10b068500>, message: 'activate', parms: []}
+Method general_apply in class nil, char 28059 in file 
+    C:\Program Files\Serpent\lib\sched.srp
+Frame variables: {target: <obj@0000020336C22590>, message: 'activate', parms: []}
  683:         sendapply(target, message, parms)
                                                ^
 -----------------------------------------------------
-Method [32;49mactivate[39;49m in class [34;49mVscheduler[39;49m, char 20825 in file 
-    /Users/lisalo/serpent/lib/sched.srp
-Frame variables: {event: [3436, nil, 'note_on', [0, 60, 60]], target: nil, message: 'note_on', parms: [0, 60, 60]}
+Method activate in class Vscheduler, char 20825 in file 
+    C:\Program Files\Serpent\lib\sched.srp
+Frame variables: {event: [1148, <obj@0000020336C7E698>, 'beat_update', []], target: <obj@0000020336C7E698>, message: 'beat_update', parms: []}
  519:             general_apply(target, message, parms)
                                ^
 -----------------------------------------------------
-Method [32;49mgeneral_apply[39;49m in class [34;49mnil[39;49m, char 28098 in file 
-    /Users/lisalo/serpent/lib/sched.srp
-Frame variables: {target: nil, message: 'note_on', parms: [0, 60, 60]}
- 685:         apply(message, parms)
-                                   ^
+Method general_apply in class nil, char 28059 in file 
+    C:\Program Files\Serpent\lib\sched.srp
+Frame variables: {target: <obj@0000020336C7E698>, message: 'beat_update', parms: []}
+ 683:         sendapply(target, message, parms)
+                                               ^
 -----------------------------------------------------
-Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
-[31;49mundefined method - note_on[39;49m
+Method beat_update in class Stage, char 3054 in file 
+    C:\Users\tourm\Documents\GitHub\Music-Project-5\player\../cond/stage.srp
+Frame variables: {bnow: 1148}
+ 103:         metronome()
+                       ^
+-----------------------------------------------------
+Method metronome in class Stage, char 3562 in file 
+    C:\Users\tourm\Documents\GitHub\Music-Project-5\player\../cond/stage.srp
+Frame variables: {pitch: 66}
+ 118:                     play_a_measure() // implemented in player only
+                                        ^
+-----------------------------------------------------
+Method play_a_measure in class nil, char 4152 in file 
+    C:\Users\tourm\Documents\GitHub\Music-Project-5\player\playerdemo.srp
+  93:         playAllTracks()
+                           ^
+-----------------------------------------------------
+Method playAllTracks in class nil, char 8668 in file 
+    C:\Users\tourm\Documents\GitHub\Music-Project-5\player\osc_interaction.srp
+Frame variables: {i: 0}
+ 318: 		playTrack(allTracks[i],allTracks[i].getArray(1),0,i)
+                 ^
+-----------------------------------------------------
+Method playTrack in class nil, char 8871 in file 
+    C:\Users\tourm\Documents\GitHub\Music-Project-5\player\osc_interaction.srp
+Frame variables: {tr: <obj@00000203374A8F18>, notesList: [], v: 0, chan: 0, i: 0}
+ 324: 	for i=0 to len(notesList[v])
+                               ^
+-----------------------------------------------------
+Method <callin_method> in class nil
+subscript out of bounds: 0
 1> ? - stack trace
 <id> - print variable value
 * - print all variables
@@ -50,3 +79,4 @@ Method [32;49m<callin_method>[39;49m in class [34;49mnil[39;49m
 =<expr> - evaluate expression
 ! - exit
 > - resume execution
+1> Exiting ...
