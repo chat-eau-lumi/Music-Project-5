@@ -271,8 +271,7 @@ def get_num_notes(measures, num_measure, run):
     for i=0 to len(cur_measure):
         num_beats = num_beats + cur_measure[i]
    
-    if (run == 1):
-        num_notes = num_beats/0.25
+    if (run == 1):        num_notes = num_beats/0.25
     else:
         num_notes = len(cur_measure)
 
