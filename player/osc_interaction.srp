@@ -151,11 +151,11 @@ def insertMelody(timestamp,address,types,rest parameters):
 				pitch=8
 			elif subseq(address,-2,len(address))=="09"
 				pitch=9
-			if parameters[0]==[1]:
-				sched_cause(0,midi_out,'program',len(allTracks),instrMel)
-				sched_cause(0,midi_out,'note_on',len(allTracks),pitch+octave,100)
-			if parameters[0]==[0]:
-				sched_cause(0,midi_out,'note_on',len(allTracks),pitch+octave,0)
+			//if parameters[0]==[1]:
+			//	sched_cause(0,midi_out,'program',len(allTracks),instrMel)
+			//	sched_cause(0,midi_out,'note_on',len(allTracks),pitch+octave,100)
+			//if parameters[0]==[0]:
+			//	sched_cause(0,midi_out,'note_on',len(allTracks),pitch+octave,0)
 			if (recordMel)		
 				if parameters[0]==[1]:
 					melRhythmRaw.append(time_get())
@@ -171,9 +171,9 @@ def insertRhythm(timestamp,address,types,rest parameters):
 	#display "rhythm", timestamp, address, types, parameters
 	if (address == "/melody/rm/pushPad")
 
-		sched_cause(0,midi_out,'program',len(allTracks),trackInstr)
-		sched_cause(0,midi_out,'note_on',len(allTracks),60,60)
-		sched_cause(1,midi_out,'note_on',len(allTracks),60,0)
+		//sched_cause(0,midi_out,'program',len(allTracks),trackInstr)
+		//sched_cause(0,midi_out,'note_on',len(allTracks),60,60)
+		//sched_cause(1,midi_out,'note_on',len(allTracks),60,0)
 		if (recording)
 			genRhythm.append(time_get())
 	if (address == "/melody/rm/record") 
@@ -311,6 +311,7 @@ def processAllTracks(k,bpm,veloc, cur_scale):
 
 def playAllTracks():
 	display(len(allTracks))
+	midi_out.alloff()
 	sched_select(vtsched)
 	for i = 0 to (len(allTracks))
 		allTracks[i].getTrack()
@@ -333,8 +334,10 @@ def playTrack(tr,notesList,v,chan):
 				vol2=127
 			elif vol2<0:
 				vol2=0
-			sched_cause(0,midi_out,'note_on',chan,notesList[v][i].note_to_pitch(),vol2)
-			sched_cause(notesList[v][i].getNoteEnd(),midi_out,'note_on',chan,notesList[v][i].note_to_pitch(),0)
+			pitchCurr = notesList[v][i].note_to_pitch()
+
+			sched_cause(0,midi_out,'note_on',chan,pitchCurr,vol2)
+			sched_cause(notesList[v][i].getNoteEnd(),midi_out,'note_on',chan,pitchCurr,0)
 		if (v<len(notesList)-1)
 			sched_cause(notesList[v][0].getDuration(),nil,'playTrack',tr,notesList,v+1,chan)
 
