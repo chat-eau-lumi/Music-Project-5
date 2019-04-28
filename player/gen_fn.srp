@@ -193,7 +193,7 @@ def get_dur(measure, noteIndex, durInd, run):
     if (run == 1):
         curDur = 0.25
     else:
-        curDur = curMeasure[noteIndex]
+        curDur = curMeasure[noteIndex % len(curMeasure)]
  
     return curDur 
 
@@ -223,6 +223,8 @@ def gen_note_prob(note, cur_scale):
                 prob_arr.append(0.5)
             else:
                 distance = abs(note - i)
+                if ((distance % 4 == 0) or (distance % 7 == 0)):
+                    distance = distance + 2
                 prob_arr.append(distance)
         else:
             prob_arr.append(irandom(1))
@@ -258,8 +260,19 @@ def get_next(note_prob):
     if (len(possible_notes) == 1):
         return max_index
     else:
-        decider = irandom(len(possible_notes)-1)
-        max_index = possible_notes[decider]
+        lined_by_prob = []
+        all_prob = 0
+        for j=0 to len(possible_notes):
+            all_prob = all_prob + note_prob[possible_notes[j]]
+            lined_by_prob.append(all_prob)
+
+        decider = irandom(all_prob)
+        found = 0
+
+        for k=0 to len(lined_by_prob):
+            if (decider < lined_by_prob[k] and found == 0):
+                max_index = possible_notes[k]
+                found = 1
 
     return max_index + 60
 
@@ -268,20 +281,43 @@ def get_num_notes(measures, num_measure, run):
     num_measure = num_measure % len(measures)
     cur_measure = measures[num_measure]
 
-    for i=0 to len(cur_measure):
+    for i=0 to (len(cur_measure)-1):
         num_beats = num_beats + cur_measure[i]
    
-    if (run == 1):        num_notes = num_beats/0.25
+    if (run == 1):        
+        num_notes = num_beats/0.25
     else:
         num_notes = len(cur_measure)
 
 def get_run(note_index, cur_scale):
     available = []
-    for i=0 to len(cur_scale):
-        if (cur_scale[i] != nil):
+    run_note = []
+
+    for i=0 to (len(cur_scale)-1):
+        if cur_scale[i] != nil:
             available.append(i)
-    curIndex = note_index % len(available)
-    return available[curIndex] + 60
+
+    for j=0 to num_notes:
+        distance = abs(i - cur_bass)
+        if (distance % 4 == 0 or distance % 7 == 0 or distance == 0):
+            arp = true
+        else:
+            arp = false
+        
+        next_run_note = available[irandom(len(available)-1)]
+
+        if (j == 0):
+            run_note.append(cur_bass)
+        elif (next_run_note >= run_note[j-1]):
+            run_note.append(next_run_note)
+        elif (next_run_note < run_note[j-1]):
+            if (run_note[j-1] == available[len(available)-1]):
+                run_note.append(next_run_note)
+            else:
+                run_note.append(available[(run_note[j-1]+1) % len(available)])
+    
+    curIndex = note_index % len(run_note)
+    return run_note[curIndex] + 60
 
 def gen_melody_motif():
     #generate array of notes based on existing pitch sequence and durations
@@ -295,17 +331,14 @@ def gen_melody_motif():
 
     # for each measure
     for i=0 to 4:
-        
         # randomly choose if its a run
-        rand = irandom(8) % 4
+        rand = irandom(16) % 2
         if (rand == 0):
             run = 1
         else:
             run = 0
 
         num_notes = get_num_notes(allDurations[durIndex], i, run)
-
-        display num_notes
 
         for j=0 to num_notes:
             if (run == 1):
@@ -319,6 +352,8 @@ def gen_melody_motif():
             
             last_pitch = pitch%12
             melody_arr.append([cur_note])
+
+    //display melody_arr
     return melody_arr 
     
 def play_melody_user(melody):
@@ -333,5 +368,5 @@ def main():
     play_melody_user(melody)
 
 #gen_melody_motif()
-#main()
+main()
 #play_melody()
