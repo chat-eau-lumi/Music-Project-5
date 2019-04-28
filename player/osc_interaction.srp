@@ -8,13 +8,13 @@ require "dataStruct"
 require "gen_fn"
 
 allTracks = []
-
+beatsPerMeasure=4
 
 recording = false
 genRhythm = []
 newRealRhythm=[]
 vari =50
-trackInstr=35
+trackInstr=116
 trackMotif=[]
 
 melNotes=[]
@@ -33,6 +33,7 @@ volume=0
 
 currentTrack = 0
 tempo=2
+primeType="melody"
 
 def initializeOSC():
 	prefs = Prefs("project3")
@@ -91,6 +92,9 @@ def trackEdit(timestamp,address,types,rest parameters):
 			currTrackP2= int(subseq(address,-1,len(address)))
 			currentTrack=(currTrackP2-1)*4+(currTrackP1-1)
 			#display (currentTrack)
+	if (address == "/melody/te/newButton")
+		if len(allTracks)>currentTrack
+			allTracks[currentTrack].setArray([])
 	if (address == "/melody/te/muteButton")
 		if len(allTracks)>currentTrack
 			if parameters[0]==[1]
@@ -214,9 +218,9 @@ def getRhythmInstrument(p1,p2):
 		return 122+p2
 	elif p1 == 5:
 		if p2< 4:
-			return 101+p2
+			return 89+p2
 		else:
-			return 128
+			return 96
 
 def getMelodyInstrument(p1,p2):
 	if p1 == 1:
@@ -307,12 +311,20 @@ def processAllTracks(k,bpm,veloc, cur_scale):
 		//allTracks[i].changeKey(k)
 		allTracks[i].snapToScale(cur_scale)
 	volume=veloc
+	beatsPerMeasure=bpm
 
 
 def playAllTracks():
 	display(len(allTracks))
 	midi_out.alloff()
 	sched_select(vtsched)
+	if (len(allTracks)==0)
+		if (primeType=="rhythm")
+			allTracks.append(track([], 50, "rhythm"))
+			allTracks[len(allTracks)-1].setStatus(0)
+		else
+			allTracks.append(track([], 50, "melody"))
+			allTracks[len(allTracks)-1].setStatus(0)
 	for i = 0 to (len(allTracks))
 		allTracks[i].getTrack()
 		if (allTracks[i].getPureArray()==[] or allTracks[i].getReset()==0):
@@ -321,6 +333,7 @@ def playAllTracks():
 			else
 				allTracks[i].setArray(gen_melody_motif())
 		playTrack(allTracks[i],allTracks[i].getArray(1),0,i)
+	sched_cause(beatsPerMeasure+.99,midi_out,'alloff')
 
 def playTrack(tr,notesList,v,chan):
 	sched_select(vtsched)
@@ -340,6 +353,7 @@ def playTrack(tr,notesList,v,chan):
 			sched_cause(notesList[v][i].getNoteEnd(),midi_out,'note_on',chan,pitchCurr,0)
 		if (v<len(notesList)-1)
 			sched_cause(notesList[v][0].getDuration(),nil,'playTrack',tr,notesList,v+1,chan)
+	
 
 //def playBack(tr,v):
 //	sched_select(vtsched)
