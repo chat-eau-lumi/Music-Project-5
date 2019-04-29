@@ -264,7 +264,6 @@ def get_next(note_prob):
     if (len(possible_notes) == 1):
         return max_index
     else:
-=======
         lined_by_prob = []
         all_prob = 0
         for j=0 to len(possible_notes):
@@ -278,7 +277,6 @@ def get_next(note_prob):
             if (decider < lined_by_prob[k] and found == 0):
                 max_index = possible_notes[k]
                 found = 1
->>>>>>> 612eea2ebf307d53c25b14d6edcabf1d73571437
 
     return max_index + 60
 
@@ -346,8 +344,6 @@ def gen_melody_motif():
 
         num_notes = get_num_notes(allDurations[durIndex], i, run)
 
-=======
->>>>>>> 612eea2ebf307d53c25b14d6edcabf1d73571437
         for j=0 to num_notes:
             if (run == 1):
                 pitch = get_run(j, cur_scale)
@@ -361,9 +357,6 @@ def gen_melody_motif():
             last_pitch = pitch%12
             melody_arr.append([cur_note])
 
-=======
-    //display melody_arr
->>>>>>> 612eea2ebf307d53c25b14d6edcabf1d73571437
     return melody_arr 
     
 def play_melody_user(melody):
@@ -377,8 +370,4 @@ def main():
     melody = gen_melody_motif()
     play_melody_user(melody)
 
-=======
-#gen_melody_motif()
 main()
-#play_melody()
->>>>>>> 612eea2ebf307d53c25b14d6edcabf1d73571437
