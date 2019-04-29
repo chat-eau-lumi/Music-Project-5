@@ -85,11 +85,9 @@ def gen_percussion_auto():
         pattern = irandom(4)
         perc_pattern = default_patterns[pattern]
 
-    //index = index + 1
     #reset duration to be played only if style changed or out_of_range
 
     perc_arr = []
-    //perc_arr.append([])
 
     curBeat = cur_beats_per_measure
     total = sum(perc_pattern)
@@ -107,6 +105,7 @@ def gen_percussion_auto():
 
     # add four measures to perc arr
     for i = 0 to 4:
+        # for each measure, add notes according to duration pattern chosen
         for x = 0 to len(perc_pattern):
             newNote = note(60, 1, 80, duration[x])
             perc_arr.append([newNote])
@@ -190,6 +189,8 @@ def get_dur(measure, noteIndex, durInd, run):
     curArray = allDurations[durInd]
     measure = measure % len(curArray)
     curMeasure = curArray[measure]
+
+    # if we have a run, duration of each note is 0.25
     if (run == 1):
         curDur = 0.25
     else:
@@ -225,15 +226,18 @@ def gen_note_prob(note, cur_scale):
                 distance = abs(note - i)
                 prob_arr.append(distance)
         else:
+            # if not in scale, choose to include it with 50% chance
             prob_arr.append(irandom(1))
     return prob_arr
 
 def get_next(note_prob):
+
     // Edge case, if the note is not in scale, the note_prob = []
     if note_prob == []:
       max_prob = 0
     else:
       max_prob = note_prob[0]
+
     max_index = 0
     possible_notes = []
 
@@ -258,6 +262,7 @@ def get_next(note_prob):
     if (len(possible_notes) == 1):
         return max_index
     else:
+        # choose a note from all notes with equal probability
         decider = irandom(len(possible_notes)-1)
         max_index = possible_notes[decider]
 
@@ -271,7 +276,8 @@ def get_num_notes(measures, num_measure, run):
     for i=0 to len(cur_measure):
         num_beats = num_beats + cur_measure[i]
    
-    if (run == 1):        num_notes = num_beats/0.25
+    if (run == 1):        
+        num_notes = num_beats/0.25
     else:
         num_notes = len(cur_measure)
 
@@ -305,8 +311,7 @@ def gen_melody_motif():
 
         num_notes = get_num_notes(allDurations[durIndex], i, run)
 
-        display num_notes
-
+        # for each note, add to an array
         for j=0 to num_notes:
             if (run == 1):
                 pitch = get_run(j, cur_scale)
@@ -319,6 +324,7 @@ def gen_melody_motif():
             
             last_pitch = pitch%12
             melody_arr.append([cur_note])
+
     return melody_arr 
     
 def play_melody_user(melody):
@@ -332,6 +338,3 @@ def main():
     melody = gen_melody_motif()
     play_melody_user(melody)
 
-#gen_melody_motif()
-#main()
-#play_melody()
