@@ -237,6 +237,7 @@ def gen_note_prob(note, cur_scale):
     return prob_arr
 
 def get_next(note_prob):
+    #return next note with reference to probability array 
 
     // Edge case, if the note is not in scale, the note_prob = []
     if note_prob == []:
@@ -288,6 +289,8 @@ def get_next(note_prob):
     return max_index + 60
 
 def get_num_notes(measures, num_measure, run):
+    #return number of notes that should be in a measure
+
     num_beats = 0
     num_measure = num_measure % len(measures)
     cur_measure = measures[num_measure]
@@ -303,6 +306,8 @@ def get_num_notes(measures, num_measure, run):
     return num_notes
 
 def get_run(note_index, cur_scale):
+    #return the next note in 16th note run 
+
     available = []
     run_note = []
 
@@ -341,7 +346,7 @@ def gen_melody_motif():
     melody_prob = gen_melody_prob(cur_scale)
     last_pitch = cur_bass
     count = 0
-
+    
     # for each measure
     for i=0 to 4:
         # randomly choose if its a run
@@ -367,16 +372,3 @@ def gen_melody_motif():
             melody_arr.append([cur_note])
 
     return melody_arr 
-    
-def play_melody_user(melody):
-    instr = 0
-    
-    for i=0 to len(melody):
-        display "pitch: ", melody[i][0].pitchC
-        display "dur: ", melody[i][0].sduration
-
-def main():
-    melody = gen_melody_motif()
-    play_melody_user(melody)
-
-main()
