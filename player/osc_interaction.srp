@@ -302,10 +302,8 @@ def setTempo(t):
 	tempo=t
 
 
-
 		
 def processAllTracks(k,bpm,veloc, cur_scale):
-	#display("HI")
 	for i=0 to len(allTracks)
 		allTracks[i].setRealBPM(bpm)
 		//allTracks[i].changeKey(k)
