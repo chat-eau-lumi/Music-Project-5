@@ -1,0 +1,22 @@
+OSC INTERACTION
+
+SETUP INSTRUCTIONS Adding Layout:
+1. Email specialEdit.touch osc to yourself and then download on your phone/ device with Touch OSC
+2. Open Touch OSC 
+3. Click on Layout
+4. Click on Add from File
+5. Find layout on your device (Most likely in downloads)
+6. Click on specialEdit.touchosc and then it should be added to layouts once you return to it
+7. Click on that layout in the layout menu
+
+SETUP INSTRUCTIONS TouchOSC:
+1. Click on OSC
+2. Change Host to your IP address
+3. Change port to 8050
+4. Set ZeroConf Name to nothing
+
+
+
+Page One of TOUCHOSC Interface (See specialEdit.touch osc)
+1. Rhythm: Pressing this button will generate a new rhythm track
+	Note that 
