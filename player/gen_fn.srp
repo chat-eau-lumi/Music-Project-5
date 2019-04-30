@@ -316,12 +316,6 @@ def get_run(note_index, cur_scale):
             available.append(i)
 
     for j=0 to num_notes:
-        distance = abs(i - cur_bass)
-        if (distance % 4 == 0 or distance % 7 == 0 or distance == 0):
-            arp = true
-        else:
-            arp = false
-        
         next_run_note = available[irandom(len(available)-1)]
 
         if (j == 0):
@@ -350,7 +344,7 @@ def gen_melody_motif():
     # for each measure
     for i=0 to 4:
         # randomly choose if its a run
-        rand = irandom(16) % 2
+        rand = irandom(16) % 4
         if (rand == 0):
             run = 1
         else:

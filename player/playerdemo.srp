@@ -57,13 +57,11 @@ pattern_tap = [0.5, 0.5, 0.5, 0.5]
 default_patterns = [pattern_jazz, pattern_tango, pattern_waltz, 
                     pattern_rhumba, pattern_tap]
 
-
+#finds the offsets of the scales
 def returnKey(curScale):
     for k = 0 to len(po_chords):
         if po_chords[k].index(curScale) > -1:
-            #display po_chords[k].index(curScale)
             return po_chords[k].index(curScale)
-    #display "none"
     return 0;
 
 def play_a_measure():
@@ -87,9 +85,13 @@ def play_a_measure():
     #display "    ", cur_scale, cur_chord, cur_bass
     #display "HI play_measure_again"
     if cur_style == 'rock'
+        #gets the tempo and sets it in to osc_interaction file so that the tempo is right
         setTempo(cur_bps)
+        #gets teh scale offset
         k=returnKey(cur_scale)
+        #sets all tracks to the right values
         processAllTracks(k,cur_beats_per_measure,velocity_offset, cur_scale)
+        #goes through all tracks that exist in osc_interaction
         playAllTracks()
     else
         midi_out.alloff()

@@ -1,0 +1,40 @@
+gen_fn.srp file documentation
+
+gen_fn.srp contains functions that automatically generate rhythm and melody
+motifs with consideration of information provided by conductor.
+
+PERCUSSION MOTIF GENERATION:
+
+Default rhythm patterns based on style of music are stored as global variables.
+If style was specified by users, corresponding rhythm pattern is selected.
+If users choose to create their own rhythm pattern using touchOSC, pattern is
+recorded and played. 
+Otherwise, random style is chosen and corresponding rhythm pattern is selected.
+4 measures of rhythm played by percussion instruments are generated based on 
+the rhythm pattern selected.
+Rhythm pattern is adjusted to fit the bpm specified by conductor. 
+
+MELODY MOTIF GENERATAION:
+
+2 dimensional array of probabilities are generated for the cur_scale that the 
+conductor specifies. Probabilities of playing a note are determined with consideration of notes’ distance from “previously played” note. 
+If two notes are closer in distance, they are more likely to be played after each 
+other. Also, notes in same arpeggio have higher probabilities of playing next.
+16th note runs are included in melody with 1/4 probability.
+
+Each note in melody was chosen by referencing the probability array. 
+Note with maximum probability to be played next is chosen if there is only 
+one note with possibility greater than 0. 
+Else, a random integer from 0 to sum of all probabilities is used to determine 
+next note. Note whose probability is in the range including random integer is 
+the next note. 
+For example, if probability array is [2, 0, 0.5, 0, 2, 3, 0, 5, 0, 9, 0, 9] and
+random integer is 6, E is the next note.
+
+Notes in 16th note runs are generated so that they are almost always ascending. 
+Notes in scale provided by conductor are stored in list of available notes 
+and randomly selected with consideration of last note played.
+The only time next note played is lower than previously played note is when 
+there is no higher note. 
+
+Duration of each non-run notes are randomly selected from list of duration patterns.All duration are adjusted to fit bpm provided by conductor. 
