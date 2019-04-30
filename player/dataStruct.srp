@@ -5,19 +5,26 @@ require "prefs"
 
 # NOTES
 
+// note: key is no longer really being used
+
 // key is an offset, with c = 0, of what key was playing when the
 // note was created.
 class note:
-    var key
+
+    # instance variables
+    
     var staccato
     var sduration
-    var pitchC
     var noteEnd
-    
+    var key
+    var pitchC
+
     //a note's inherent volume
     var volume
     //changes to the volume; i.e. slider control, etc.
     var volFactor
+    
+    # initializaiton
     
     //note is created using pitch and key. staccato is default off
     def init(pit, k, vol, dur):
@@ -28,6 +35,8 @@ class note:
         pitchC = pit - k
         volFactor=1 
         noteEnd=dur-.05
+
+    # functions to get instance variable values
 
     //returns a final pitch; i.e. what is being played
     def note_to_pitch():
@@ -42,19 +51,10 @@ class note:
         display idiv((pitchC + key), 12)
         return idiv((pitchC + key), 12)
 
-    //sets the final pitch; i.e. what is heard, to pitch
-    def set_pitch(pitch):
-        pitchC = pitch - key
-
-    def staccato_on():
-        staccato = true
-        
-    def staccato_off():
-        staccato = false
-
     def getDuration():
         return sduration
 
+    //bounds returned volume to 127
     def getVolume():
         if volume * volFactor > 127:
             return 127 
@@ -66,7 +66,19 @@ class note:
 
     def getNoteEnd():
         return noteEnd
+        
+    //sets the final pitch; i.e. what is heard, to pitch
+    def set_pitch(pitch):
+        pitchC = pitch - key
+
+    # functions to set instance variable values
     
+    def staccato_on():
+        staccato = true
+        
+    def staccato_off():
+        staccato = false
+
     def setVolume(newVol):
         volFactor=newVol
     
@@ -75,42 +87,38 @@ class note:
 
     def setNoteEnd(v):
         noteEnd = v
-//creates a note identical to orig but with a new pitch
+        
+    //creates a note identical to orig but with a new pitch
     def new_pitch_note(pitch):
         new_p = note(pitch, key, volume, sduration)
         if (staccato):
             new_p.staccato_on()
         new_p.setVolume(volFactor)
         return new_p
-    
-    
-
-def keys_to_note(oscString):
-
-    //not yet implemented
-    return 0;
 
 # TRACK
-# An array of (note, duration, volume) where durations add to either a 
-# half-measure or
-# a multiple of whole measures. Also includes variables for variability, 
-# pitch range, and more stuff TBD.
+# An array of (note, duration, volume). 
+# Also includes variables for variability, pitch range, and more stuff 
+# TBD.
 
+//yes, style dictates capitalized class names, but it's a bit late 
+//for that
 class track:
 
+    //2-D note array ([array of notes played same time][individual notes])
     var array
     var variability
     var type
     var instrument 
     var trackVolFactor
     var newRatio
+    //for tracking where in the track we are
     var cursor
     var active
     var realBPM
     var extra
     var measures
     var resetVal
-
 
     // takes in an array of notes, if have no motif, can key in empty
     // array which means we need to generate new motif
@@ -162,9 +170,7 @@ class track:
 
     def getReset():
         return resetVal
-
-
-
+        
     #methods to set variables
     def setStatus(i):
         active = i
@@ -204,8 +210,6 @@ class track:
         array = ar
         processArray()
         resetVal = irandom(5)
-
-
 
     #methods to calculate and process
     #makes array into measures

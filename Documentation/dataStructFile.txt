@@ -1,0 +1,46 @@
+dataStruct.txt
+
+Describes the purpose and functions of our data structures (classes).
+
+NOTE: the use of the instance variable key and its helper functions was discontinued 
+      basically right before the concert, so the code is still there, but it isn't 
+      being used (snapToScale is its replacement).
+      
+      Also, staccato never got to be used for much.
+
+----------------------------------------------
+Notes (the musical note class, not addendums):
+----------------------------------------------
+
+Represents a single musical note. Instance variables represent values such as pitch,
+duration, and volume controls (user customizable as well as conductor controlled).
+
+init takes in pitch, key, volume, and duration.
+
+Most note class functions either return or set instance variable values. Descriptions
+of their function can be found in comments about said functions in dataStruct.srp.
+
+------
+Tracks
+------
+
+Represents a segment of a musical voice (i.e. a couple measures of a melody).
+Instance variables include a double array of notes (array[i] represents notes
+that play at the same time, array[i][j] represents a single note), instrument, 
+BPM, and others that work to allow the track to be played and modified to some extent.
+
+Tracks can often be multi-measure, so there are instance variables (cursor, etc.) 
+and functions (getArray, processArray, etc.) to remember which segment of the
+track is being played across multiple calls to play_measure.
+
+init takes in the notes array, a variability measure, and the type (melody,
+drum).
+
+Most track class functions either return or set instance variable values. Descriptions
+of their function can be found in comments about said functions in dataStruct.srp.
+
+Some, as mentioned before, implement reading through the track across multiple measures.
+(i.e. cursor points to where play_measure should start next)
+
+snapToScale takes in the current scale and ensures that all notes in the track have a pitch
+in that scale. If a note isn't in the scale, its pitch is incremented until it is.
