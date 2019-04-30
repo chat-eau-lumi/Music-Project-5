@@ -56,10 +56,10 @@ class note:
         return sduration
 
     def getVolume():
-        if volume*volFactor>127:
+        if volume * volFactor > 127:
             return 127 
         else
-            return int(volume*volFactor)
+            return int(volume * volFactor)
 
     def getTrueVolume():
         return volume
@@ -71,10 +71,10 @@ class note:
         volFactor=newVol
     
     def setKey(k):
-        key=k
+        key = k
 
     def setNoteEnd(v):
-        noteEnd=v
+        noteEnd = v
 //creates a note identical to orig but with a new pitch
     def new_pitch_note(pitch):
         new_p = note(pitch, key, volume, sduration)
@@ -116,15 +116,15 @@ class track:
     // array which means we need to generate new motif
     def init(notes, vari, typ):
         resetVal = -1
-        realBPM=4
-        cursor=0
+        realBPM = 4
+        cursor = 0
         active = 1
         array = notes //actually inputting array functionality TBD
         measures = processArray()
         variability = vari
         type = typ
-        trackVolFactor=1
-        newRatio=1
+        trackVolFactor = 1
+        newRatio = 1
 
         if (type == "melody" or type == "harmony"): 
             instrument = 1 #piano
@@ -143,13 +143,13 @@ class track:
     #returns the note array of a single measure
     #changes cursor so will know to move on to next measure
     def getArray(change):
-        if (change==1)
-            if len(measures)!=0
-                if cursor>=len(measures)
-                    cursor=0
-                    resetVal=resetVal-1
-                ar=measures[cursor]
-                cursor=cursor+1
+        if (change == 1)
+            if len(measures) != 0
+                if cursor >= len(measures)
+                    cursor = 0
+                    resetVal = resetVal - 1
+                ar = measures[cursor]
+                cursor = cursor + 1
                 return ar
         else
             return measures[cursor]
@@ -167,7 +167,7 @@ class track:
 
     #methods to set variables
     def setStatus(i):
-        active=i
+        active = i
 
     #changes instrument
     def changeInstrument( newInst):
@@ -178,18 +178,18 @@ class track:
     
     def changeOctave(curOct):
         curLen = len(array)
-        for x=0 to curLen:
+        for x = 0 to curLen:
            curNote = array[x]
            curNote.octave = curOct
 
     #overall volume
     def changeVolFactor(newVol):
-        trackVolFactor=newVol
+        trackVolFactor = newVol
         processVolume()
 
     #individual track volume
     def changeVol(newR):
-        newRatio=newR
+        newRatio = newR
         processVolume()
 
     #sets bpm of measure if it's a new bpm
@@ -201,9 +201,9 @@ class track:
     
     #changes note array 
     def setArray(ar):
-        array=ar
+        array = ar
         processArray()
-        resetVal=irandom(5)
+        resetVal = irandom(5)
 
 
 
@@ -211,20 +211,20 @@ class track:
     #makes array into measures
     def processArray():
         count = 0
-        singleMeasure=[]
-        measures=[]
-        for i=0 to len(array)
+        singleMeasure = []
+        measures = []
+        for i = 0 to len(array)
             noteDur = array[i][0].getDuration()
-            if (noteDur+count)>realBPM
+            if (noteDur + count) > realBPM
                 measures.append(singleMeasure)
-                singleMeasure=[]
+                singleMeasure = []
                 count = noteDur
                 singleMeasure.append(array[i])
             else
                 singleMeasure.append(array[i])
-                count= count + noteDur
-        if singleMeasure!=[]
-            extra = realBPM-count
+                count = count + noteDur
+        if singleMeasure != []
+            extra = realBPM - count
             measures.append(singleMeasure)
         else
             extra = 0 
@@ -234,7 +234,7 @@ class track:
         curLen = len(array)
         for x=0 to (curLen):
             curNote = array[x][0]
-            curNote.setVolume(newRatio*trackVolFactor)
+            curNote.setVolume(newRatio * trackVolFactor)
 
     //changes the key for all notes in the track to k
     def changeKey(k):
