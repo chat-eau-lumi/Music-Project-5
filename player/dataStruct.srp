@@ -133,12 +133,15 @@ class track:
 
   
     #methods to get variables
+
     def getTrack():
         return type
 
     def getInstrument():
         return instrument
 
+    #returns the note array of a single measure
+    #changes cursor so will know to move on to next measure
     def getArray(change):
         if (change==1)
             if len(measures)!=0
@@ -166,6 +169,7 @@ class track:
     def setStatus(i):
         active=i
 
+    #changes instrument
     def changeInstrument( newInst):
         instrument = newInst
 
@@ -188,11 +192,14 @@ class track:
         newRatio=newR
         processVolume()
 
+    #sets bpm of measure if it's a new bpm
+    #lets track know it needs to reprocess
     def setRealBPM(bp):
         if realBPM != bp
             realBPM =bp
             processArray()
     
+    #changes note array 
     def setArray(ar):
         array=ar
         processArray()
@@ -222,7 +229,7 @@ class track:
         else
             extra = 0 
 
-   
+    #process volume for all notes 
     def processVolume():
         curLen = len(array)
         for x=0 to (curLen):
